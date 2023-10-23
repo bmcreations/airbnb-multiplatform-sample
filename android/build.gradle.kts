@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.compose)
 }
 
@@ -17,7 +17,7 @@ kotlin {
 
 android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
-    namespace = (findProperty("android.namespace") as String)
+    namespace = (findProperty("project.namespace") as String)
 
     sourceSets["main"].manifest.srcFile("src/main/AndroidManifest.xml")
 

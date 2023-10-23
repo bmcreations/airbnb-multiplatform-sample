@@ -1,4 +1,4 @@
-package dev.bmcreations.template.android
+package dev.bmcreations.template
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
