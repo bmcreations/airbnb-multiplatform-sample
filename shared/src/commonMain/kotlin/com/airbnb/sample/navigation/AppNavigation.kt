@@ -5,5 +5,5 @@ import cafe.adriel.voyager.navigator.Navigator
 
 @Composable
 fun AppNavigation() {
-    Navigator(HomeScreen)
+    Navigator(Screens.graph)
 }

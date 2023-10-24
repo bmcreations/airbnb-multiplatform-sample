@@ -6,7 +6,7 @@ import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
 @Component
-abstract class AppModule {
+abstract class AppComponent {
     @Provides
     fun providerDefaultDispatcher(): DispatcherProvider = DefaultDispatchers()
 }

@@ -132,12 +132,11 @@ fun AppTheme(
             )
         )
     ) {
-
+        MaterialTheme(
+            colorScheme = colors,
+            typography = typography(1f),
+            shapes = shapes,
+            content = content
+        )
     }
-    MaterialTheme(
-        colorScheme = colors,
-        typography = typography(1f),
-        shapes = shapes,
-        content = content
-    )
 }
