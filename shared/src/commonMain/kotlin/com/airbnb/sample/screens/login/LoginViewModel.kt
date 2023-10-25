@@ -1,30 +1,73 @@
 package com.airbnb.sample.screens.login
 
-import com.airbnb.sample.utils.BaseViewModel
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import com.airbnb.sample.data.login.SocialType
+import com.airbnb.sample.viewmodel.BaseViewModel
 import com.airbnb.sample.utils.DispatcherProvider
+import com.airbnb.sample.viewmodel.launch
 import me.tatarka.inject.annotations.Inject
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
+
+
 
 class LoginViewModel @Inject constructor(
     dispatchers: DispatcherProvider,
 ) : BaseViewModel<LoginViewModel.State, LoginViewModel.Event>(
-    initialState = State("", ""),
+    initialState = State(
+        "",
+        "",
+        true,
+        SocialType.available(true),
+    ),
     updateStateForEvent = updateStateForEvent
 ) {
     data class State(
-        val email: String,
-        val password: String,
-    )
+        val region: String,
+        val textValue: String,
+        val isPhoneSelected: Boolean,
+        val socialTypes: List<SocialType>,
+    ) {
+        val hasMetRequirements: Boolean
+            get() = region.isNotEmpty() &&
+                    // TODO: validate real phone numbers
+                    textValue.isNotEmpty()
+    }
 
     sealed interface Event {
-        data class OnEmailChanged(val email: String): Event
-        data class OnPasswordChanged(val password: String): Event
+        data class OnCountrySelected(val region: String) : Event
+        data class OnTextValueUpdated(val value: String) : Event
+        data object SwitchToEmail : Event
+        data object SwitchToPhone : Event
+    }
+
+    init {
+        viewModelScope.launch {
+            dispatchEvent(Event.OnCountrySelected("United States (+1)"))
+        }
     }
 
     companion object {
         val updateStateForEvent: (Event) -> ((State) -> State) = { event ->
             when (event) {
-                is Event.OnEmailChanged -> { state -> state.copy(email = event.email) }
-                is Event.OnPasswordChanged -> { state -> state.copy(password = event.password) }
+                is Event.OnCountrySelected -> { state -> state.copy(region = event.region) }
+                is Event.OnTextValueUpdated -> { state -> state.copy(textValue = event.value) }
+                is Event.SwitchToPhone -> { state ->
+                    state.copy(
+                        isPhoneSelected = true,
+                        socialTypes = SocialType.available(true)
+                    )
+                }
+
+                is Event.SwitchToEmail -> { state ->
+                    state.copy(
+                        isPhoneSelected = false,
+                        socialTypes = SocialType.available(false),
+                    )
+                }
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.airbnb.sample.utils
+package com.airbnb.sample.viewmodel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisallowComposableCalls
@@ -64,12 +64,3 @@ fun ViewModelScope.launch(
 ): Job {
     return coroutineScope.launch(context, start, block)
 }
-
-@Composable
-inline fun <reified T : ScreenModel> Screen.screenViewModel(
-    crossinline factory: @DisallowComposableCalls () -> T = {
-        with (ViewModelComponent::class.create()) {
-            getViewModel<T>()
-        } as T
-    }
-): T = this.rememberScreenModel(tag = T::class.qualifiedName) { factory() }

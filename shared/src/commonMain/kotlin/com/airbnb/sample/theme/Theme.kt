@@ -11,11 +11,12 @@ fun AppTheme(
     content: @Composable () -> Unit
 ) {
 
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
+    // No dark mode for Airbnb
+//    val colors = if (darkTheme) {
+//        DarkColorPalette
+//    } else {
+//        LightColorPalette
+//    }
 
     // TODO: expect/actual this for iOS vs Android
 //    val screenWidthDp = LocalConfiguration.current.screenWidthDp
@@ -111,7 +112,7 @@ fun AppTheme(
 //    )
     ProvideDimens(
         dimensions = Dimensions(
-            inset = 16.dp,
+            inset = 20.dp,
             grid = GridDimensionSet(
                 4.dp,
                 8.dp,
@@ -133,7 +134,7 @@ fun AppTheme(
         )
     ) {
         MaterialTheme(
-            colorScheme = colors,
+            colorScheme = LightColorPalette,
             typography = typography(1f),
             shapes = shapes,
             content = content

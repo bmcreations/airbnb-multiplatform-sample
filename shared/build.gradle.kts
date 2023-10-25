@@ -37,6 +37,7 @@ kotlin {
                 implementation(compose.components.resources)
                 implementation(libs.voyager.navigator)
                 implementation(libs.voyager.transitions)
+                implementation(libs.voyager.navigator.tabs)
                 implementation(libs.kotlin.inject.runtime)
                 implementation(libs.kotlin.viewmodel.core)
                 implementation(libs.imageloader)
@@ -67,6 +68,8 @@ android {
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
+    // loaded for android fonts
+    sourceSets["main"].res.srcDirs("src/commonMain/res")
     sourceSets["main"].resources.srcDirs("src/commonMain/resources")
 
     defaultConfig {
