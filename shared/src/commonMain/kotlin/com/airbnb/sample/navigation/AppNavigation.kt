@@ -1,14 +1,12 @@
 package com.airbnb.sample.navigation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -19,13 +17,9 @@ import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.zIndex
-import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.bottomSheet.BottomSheetNavigator
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
@@ -33,12 +27,13 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.utils.navigationBars
-import org.lighthousegames.logging.logging
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AppNavigation() {
     // TODO: check for authenticated state
+    val tabs = remember { Tabs.anonymous }
+
     BottomSheetNavigator(
         modifier = Modifier.fillMaxSize(),
         sheetBackgroundColor = MaterialTheme.colorScheme.surface,
@@ -52,7 +47,7 @@ fun AppNavigation() {
                 Scaffold(
                     modifier = Modifier.weight(1f),
                     bottomBar = {
-                        UnAuthenticatedTabBar()
+                        TabBar(tabs)
                     }
                 ) {
                     CurrentTab()
@@ -70,17 +65,15 @@ fun AppNavigation() {
 }
 
 @Composable
-private fun UnAuthenticatedTabBar() {
+private fun TabBar(tabs: List<Tab>) {
     BottomNavigation(
-        backgroundColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        backgroundColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
         elevation = MaterialTheme.dimens.staticGrid.x2,
     ) {
-        TabNavigationItem(Tabs.Anonymous.Explore)
-        TabNavigationItem(Tabs.Anonymous.Wishlists)
-        TabNavigationItem(Tabs.Anonymous.Trips)
-        TabNavigationItem(Tabs.Anonymous.Inbox)
-        TabNavigationItem(Tabs.Anonymous.LogIn)
+        tabs.forEach { tab ->
+            TabNavigationItem(tab)
+        }
     }
 }
 

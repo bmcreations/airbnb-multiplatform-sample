@@ -17,7 +17,7 @@ fun LargeHeader(
     Column(modifier = modifier) {
         title()
         if (description != null) {
-            Spacer(modifier = Modifier.requiredHeight(MaterialTheme.dimens.grid.x1))
+            Spacer(modifier = Modifier.requiredHeight(MaterialTheme.dimens.grid.x2))
             description()
         }
     }

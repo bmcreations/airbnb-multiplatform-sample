@@ -8,8 +8,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-actual fun getPlatformName(): String = "Android"
-
 @Composable
 actual fun setStatusBarColor(color: Color, isDark: Boolean) {
     val view = LocalView.current

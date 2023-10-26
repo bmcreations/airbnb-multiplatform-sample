@@ -10,8 +10,6 @@ import platform.UIKit.UIColor
 import platform.UIKit.UIView
 import platform.UIKit.statusBarManager
 
-actual fun getPlatformName(): String = "iOS"
-
 @OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun setStatusBarColor(color: Color, isDark: Boolean) {

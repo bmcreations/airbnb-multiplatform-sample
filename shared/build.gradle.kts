@@ -31,6 +31,7 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.material)
+                implementation(compose.materialIconsExtended)
                 implementation(compose.ui)
                 implementation(compose.animation)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)

@@ -14,7 +14,10 @@ import com.airbnb.sample.theme.dimens
 
 internal fun LazyListScope.loginSelectionDivider() {
     item {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.padding(vertical = MaterialTheme.dimens.grid.x2),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Box(
                 modifier = Modifier.weight(1f)
                     .height(MaterialTheme.dimens.thickBorder)

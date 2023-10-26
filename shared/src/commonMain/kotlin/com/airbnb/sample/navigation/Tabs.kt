@@ -9,16 +9,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
+import com.airbnb.sample.screens.explore.Render
+import com.airbnb.sample.screens.inbox.Render
 import com.airbnb.sample.screens.profile.Render
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
+import com.airbnb.sample.screens.trips.Render
+import com.airbnb.sample.screens.wishlist.Render
+import com.airbnb.sample.ui.resources.Drawables
 
 internal sealed interface Tabs {
+    companion object {
+        val anonymous: List<Tab> = listOf(
+            Anonymous.Explore,
+            Anonymous.Wishlists,
+            Anonymous.Trips,
+            Anonymous.Inbox,
+            Anonymous.Login
+        )
+    }
     sealed interface Anonymous : Tabs {
+
         data object Explore : Tabs, Tab {
             @Composable
             override fun Content() {
-
+                Screens.Explore.Render()
             }
 
             override val options: TabOptions
@@ -37,59 +50,81 @@ internal sealed interface Tabs {
         data object Wishlists : Tabs, Tab {
             @Composable
             override fun Content() {
-
+                Screens.Wishlists.Render()
             }
 
             override val options: TabOptions
-                @Composable get() = TabOptions(
-                    index = 1u,
-                    title = "Wishlists",
-                    icon = rememberVectorPainter(Icons.Rounded.FavoriteBorder)
-                )
+                @Composable get() {
+                    val icon = rememberVectorPainter(Icons.Rounded.FavoriteBorder)
+
+                    return remember {
+                        TabOptions(
+                            index = 1u,
+                            title = "Wishlists",
+                            icon = icon
+                        )
+                    }
+                }
         }
 
         data object Trips : Tabs, Tab {
             @Composable
             override fun Content() {
-
+                Screens.Trips.Render()
             }
 
-            @OptIn(ExperimentalResourceApi::class)
             override val options: TabOptions
-                @Composable get() = TabOptions(
-                    index = 2u,
-                    title = "Trips",
-                    icon = painterResource("drawable/ic_airbnb.xml")
-                )
+                @Composable get() {
+                    val icon = Drawables.AirbnbLogo
+
+                    return remember {
+                        TabOptions(
+                            index = 2u,
+                            title = "Trips",
+                            icon = icon
+                        )
+                    }
+                }
         }
 
         data object Inbox : Tabs, Tab {
             @Composable
             override fun Content() {
-
+                Screens.Inbox.Render()
             }
 
-            @OptIn(ExperimentalResourceApi::class)
             override val options: TabOptions
-                @Composable get() = TabOptions(
-                    index = 3u,
-                    title = "Inbox",
-                    icon = painterResource("drawable/ic_chat_centered.xml")
-                )
+                @Composable get() {
+                    val icon = Drawables.ChatCentered
+
+                    return remember {
+                        TabOptions(
+                            index = 3u,
+                            title = "Inbox",
+                            icon = icon
+                        )
+                    }
+                }
         }
 
-        data object LogIn : Tabs, Tab {
+        data object Login : Tabs, Tab {
             @Composable
             override fun Content() {
                 Screens.Profile.Render()
             }
 
             override val options: TabOptions
-                @Composable get() = TabOptions(
-                    index = 4u,
-                    title = "Log in",
-                    icon = rememberVectorPainter(Icons.Rounded.AccountCircle)
-                )
+                @Composable get() {
+                    val icon = rememberVectorPainter(Icons.Rounded.AccountCircle)
+
+                    return remember {
+                        TabOptions(
+                            index = 4u,
+                            title = "Log in",
+                            icon = icon
+                        )
+                    }
+                }
         }
     }
 }

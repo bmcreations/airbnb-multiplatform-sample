@@ -15,7 +15,5 @@ fun App() {
     }
 }
 
-expect fun getPlatformName(): String
-
 @Composable
 expect fun setStatusBarColor(color: Color, isDark: Boolean)

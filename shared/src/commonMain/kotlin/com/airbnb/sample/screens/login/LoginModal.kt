@@ -1,20 +1,12 @@
 package com.airbnb.sample.screens.login
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,52 +16,35 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.airbnb.sample.data.login.SocialType
 import com.airbnb.sample.navigation.Screens
 import com.airbnb.sample.screens.login.components.LoginIdentifierEntry
 import com.airbnb.sample.screens.login.components.loginSelectionDivider
 import com.airbnb.sample.screens.login.components.socialLoginOptions
 import com.airbnb.sample.theme.dimens
-import com.airbnb.sample.utils.statusBars
-import com.airbnb.sample.utils.ui.modalHeight
+import com.airbnb.sample.theme.primarySecondaryToPrimaryTertiaryGradient
+import com.airbnb.sample.ui.components.BottomSheetModal
+import com.airbnb.sample.ui.components.GradientButton
 import com.airbnb.sample.viewmodel.screenViewModel
 
 @Composable
-internal fun Screens.Login.Render() {
-    Column(modifier = Modifier.modalHeight()) {
-        Column(
-            modifier = Modifier
-                .windowInsetsTopHeight(WindowInsets.statusBars)
-                .zIndex(999F)
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background),
-            verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.grid.x2)
-        ) {
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(vertical = MaterialTheme.dimens.staticGrid.x1),
-            ) {
-                Text(
-                    modifier = Modifier.align(Alignment.Center),
-                    text = "Log in or sign up",
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.W600),
-                )
-            }
-            Divider(color = MaterialTheme.colorScheme.outlineVariant)
-        }
-        Content(modifier = Modifier.weight(1f))
+internal fun Screens.LoginModal.Render() {
+    BottomSheetModal(
+        title = "Log in or sign up"
+    ) {
+        Screens.LoginModal.Content(
+            modifier = Modifier,
+        )
     }
 }
 
 @Composable
-private fun Screens.Login.Content(
+private fun Screens.LoginModal.Content(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = screenViewModel()
 ) {
@@ -103,17 +78,19 @@ private fun Screens.Login.Content(
 
                 },
                 value = textValue,
-                onValueChange = { textValue = it }
+                onValueChange = { textValue = it },
+                errorMessage = state.textFieldErrorMessage
             )
         }
         item {
-            Button(
+            GradientButton(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = state.hasMetRequirements,
                 onClick = {
-
+                    viewModel.dispatchEvent(LoginViewModel.Event.SubmitLogin)
                 },
                 shape = MaterialTheme.shapes.medium,
+                brush = MaterialTheme.colorScheme.primarySecondaryToPrimaryTertiaryGradient,
             ) {
                 Text(
                     modifier = Modifier.padding(vertical = MaterialTheme.dimens.staticGrid.x1),
