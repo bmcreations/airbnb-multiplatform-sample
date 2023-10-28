@@ -27,6 +27,7 @@ internal val LightColorPalette = lightColorScheme(
     onPrimaryContainer = Color.White,
     surfaceVariant = Color.White,
     background = Color.White,
+    onBackground = Color(0xFF373737),
     secondary = Color(0xFF03DAC5),
     tertiary = Color(0xFF008488),
     outline = Color(0xFFC4C4C4),

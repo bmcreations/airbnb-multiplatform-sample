@@ -3,6 +3,7 @@ package com.airbnb.sample.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -135,7 +136,8 @@ fun AppTheme(
     ) {
         MaterialTheme(
             colorScheme = LightColorPalette,
-            typography = typography(1f),
+            typography = typography(LocalDensity.current.fontScale
+            ),
             shapes = shapes,
             content = content
         )

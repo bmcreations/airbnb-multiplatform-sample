@@ -68,14 +68,13 @@ fun typography(
         fontWeight = FontWeight.W500,
         color = MaterialTheme.colorScheme.onBackground,
         fontSize = 16.sp * fontScale,
-        lineHeight = 21.1.sp * fontScale,
+        lineHeight = 16.sp * fontScale,
     ),
     bodySmall = TextStyle(
         fontFamily = inter,
-        fontWeight = FontWeight.W500,
+        fontWeight = FontWeight.W400,
         color = MaterialTheme.colorScheme.onBackground,
         fontSize = 14.sp * fontScale,
-        lineHeight = 14.sp * fontScale,
     ),
     labelLarge = TextStyle(
         fontFamily = inter,

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +34,7 @@ fun UserGateKeeper(
             LargeHeader(
                 modifier = Modifier.padding(horizontal = MaterialTheme.dimens.inset),
                 title = {
-                    Text(text = title, style = MaterialTheme.typography.titleMedium)
+                    Text(text = title)
                 }
             )
         }
@@ -43,6 +44,7 @@ fun UserGateKeeper(
                 verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.staticGrid.x1)) {
                 Text(text = messageHeading, style = MaterialTheme.typography.bodyLarge)
                 Text(
+                    modifier = Modifier.fillMaxWidth(0.9f),
                     text = messageBody,
                     style = MaterialTheme.typography.bodySmall,
                     minLines = 2,

@@ -70,13 +70,11 @@ private fun Content(
             LargeHeader(
                 modifier = Modifier.padding(horizontal = MaterialTheme.dimens.inset),
                 title = {
-                    Text(text = "Profile", style = MaterialTheme.typography.titleMedium)
+                    Text(text = "Profile")
                 },
                 description = {
                     Text(
                         text = "Log in to start planning your next trip.",
-                        color = MaterialTheme.colorScheme.secondaryText,
-                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             )
