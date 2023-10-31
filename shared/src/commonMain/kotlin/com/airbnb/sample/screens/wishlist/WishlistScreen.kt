@@ -3,7 +3,7 @@ package com.airbnb.sample.screens.wishlist
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
+import com.airbnb.sample.navigation.LocalPlatformNavigator
 import com.airbnb.sample.navigation.Screens
 import com.airbnb.sample.ui.components.UserGateKeeper
 
@@ -16,7 +16,7 @@ internal fun Screens.Wishlists.Render() {
 private fun Content(
     modifier: Modifier = Modifier,
 ) {
-    val navigator = LocalBottomSheetNavigator.current
+    val navigator = LocalPlatformNavigator.current
 
     // TODO: support authenticated state
     UserGateKeeper(

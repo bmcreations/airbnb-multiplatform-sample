@@ -4,12 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Divider
@@ -23,17 +20,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.zIndex
-import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
+import com.airbnb.sample.navigation.LocalPlatformNavigator
 import com.airbnb.sample.theme.dimens
-import com.airbnb.sample.utils.statusBars
 import com.airbnb.sample.utils.ui.Platform
-import com.airbnb.sample.utils.ui.Row
 import com.airbnb.sample.utils.ui.modalHeight
 import com.airbnb.sample.utils.ui.usesCloseAffordanceOnSheets
 
 @Composable
-fun BottomSheetModal(
+fun Modal(
     modifier: Modifier = Modifier,
     title: String,
     content: @Composable () -> Unit,
@@ -52,7 +46,7 @@ fun BottomSheetModal(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    val navigator = LocalBottomSheetNavigator.current
+                    val navigator = LocalPlatformNavigator.current
                     if (Platform.usesCloseAffordanceOnSheets) {
                         IconButton(onClick = { navigator.hide() }) {
                             Icon(Icons.Rounded.Close, contentDescription = "Close")

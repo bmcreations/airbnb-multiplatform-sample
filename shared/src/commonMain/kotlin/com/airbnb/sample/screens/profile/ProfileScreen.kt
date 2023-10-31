@@ -3,25 +3,18 @@ package com.airbnb.sample.screens.profile
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Accessibility
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,14 +28,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
+import com.airbnb.sample.navigation.LocalPlatformNavigator
 import com.airbnb.sample.navigation.Screens
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.theme.secondaryText
 import com.airbnb.sample.ui.components.GradientButton
 import com.airbnb.sample.ui.components.LargeHeader
 import com.airbnb.sample.ui.components.SettingItem
-import com.airbnb.sample.ui.components.SettingItemDefaults
 import com.airbnb.sample.ui.resources.Drawables
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -57,7 +49,7 @@ internal fun Screens.Profile.Render() {
 private fun Content(
     modifier: Modifier = Modifier,
 ) {
-    val navigator = LocalBottomSheetNavigator.current
+    val navigator = LocalPlatformNavigator.current
     // TODO: support authenticated state
     LazyColumn(
         modifier = modifier,
@@ -177,7 +169,7 @@ private fun Content(
                     icon = Drawables.Settings,
                     title = "Settings"
                 ) {
-                    navigator.show(Screens.Settings)
+                    navigator.push(Screens.Settings)
                 }
 
                 SettingItem(

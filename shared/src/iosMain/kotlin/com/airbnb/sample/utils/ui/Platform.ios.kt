@@ -11,6 +11,8 @@ actual fun getPlatformName(): String = "iOS"
 actual val Platform.usesCloseAffordanceOnSheets: Boolean
     get() = true
 
+actual val Platform.usesCupertinoBackdrop: Boolean
+    get() = true
 
 private val uiContentSizeCategoryToFontScaleMap = mapOf(
     UIContentSizeCategoryExtraSmall to 0.9f,

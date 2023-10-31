@@ -28,13 +28,13 @@ import com.airbnb.sample.screens.login.components.loginSelectionDivider
 import com.airbnb.sample.screens.login.components.socialLoginOptions
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.theme.primarySecondaryToPrimaryTertiaryGradient
-import com.airbnb.sample.ui.components.BottomSheetModal
+import com.airbnb.sample.ui.components.Modal
 import com.airbnb.sample.ui.components.GradientButton
 import com.airbnb.sample.viewmodel.screenViewModel
 
 @Composable
 internal fun Screens.LoginModal.Render() {
-    BottomSheetModal(
+    Modal(
         title = "Log in or sign up"
     ) {
         Screens.LoginModal.Content(

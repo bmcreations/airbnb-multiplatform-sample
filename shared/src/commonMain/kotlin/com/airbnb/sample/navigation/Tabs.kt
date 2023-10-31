@@ -7,6 +7,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.airbnb.sample.screens.explore.Render
@@ -70,7 +71,9 @@ internal sealed interface Tabs {
         data object Trips : Tabs, Tab {
             @Composable
             override fun Content() {
-                Screens.Trips.Render()
+                Navigator(Screens.Trips) {
+                    Screens.Trips.Render()
+                }
             }
 
             override val options: TabOptions
@@ -90,7 +93,9 @@ internal sealed interface Tabs {
         data object Inbox : Tabs, Tab {
             @Composable
             override fun Content() {
-                Screens.Inbox.Render()
+                Navigator(Screens.Inbox) {
+                    Screens.Inbox.Render()
+                }
             }
 
             override val options: TabOptions
@@ -110,7 +115,9 @@ internal sealed interface Tabs {
         data object Login : Tabs, Tab {
             @Composable
             override fun Content() {
-                Screens.Profile.Render()
+                Navigator(Screens.Profile) {
+                    Screens.Profile.Render()
+                }
             }
 
             override val options: TabOptions

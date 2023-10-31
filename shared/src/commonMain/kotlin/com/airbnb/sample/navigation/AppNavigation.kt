@@ -8,44 +8,73 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
-import cafe.adriel.voyager.navigator.bottomSheet.BottomSheetNavigator
+import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.utils.navigationBars
+import com.airbnb.sample.utils.statusBars
 
-@OptIn(ExperimentalMaterialApi::class)
+@Composable
+expect fun AppNavHost(content: @Composable () -> Unit)
+
+expect class PlatformNavigator {
+    val isVisible: Boolean
+    val progress: Float
+    fun show(screen: Screen)
+    fun hide()
+    fun push(item: Screen)
+
+    fun push(items: List<Screen>)
+
+    fun replace(item: Screen)
+
+    fun replaceAll(item: Screen)
+
+    fun replaceAll(items: List<Screen>)
+
+    fun pop(): Boolean
+
+    fun popAll()
+
+    fun popUntil(predicate: (Screen) -> Boolean): Boolean
+}
+
+
+val LocalPlatformNavigator: ProvidableCompositionLocal<PlatformNavigator> =
+    staticCompositionLocalOf { error("PlatformNavigator not initialized") }
+
 @Composable
 fun AppNavigation() {
-    // TODO: check for authenticated state
-    val tabs = remember { Tabs.anonymous }
+    AppNavHost {
+        // TODO: check for authenticated state
+        val tabs = remember { Tabs.anonymous }
 
-    BottomSheetNavigator(
-        modifier = Modifier.fillMaxSize(),
-        sheetBackgroundColor = MaterialTheme.colorScheme.surface,
-        sheetContentColor = MaterialTheme.colorScheme.onSurface,
-        sheetShape = MaterialTheme.shapes.large,
-    ) {
         TabNavigator(Tabs.Anonymous.Explore) {
-            Column(modifier = Modifier
-                .fillMaxSize(),
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
             ) {
                 Scaffold(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .weight(1f),
                     bottomBar = {
                         TabBar(tabs)
                     }
@@ -65,7 +94,7 @@ fun AppNavigation() {
 }
 
 @Composable
-private fun TabBar(tabs: List<Tab>) {
+internal fun TabBar(tabs: List<Tab>) {
     BottomNavigation(
         backgroundColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
@@ -78,7 +107,7 @@ private fun TabBar(tabs: List<Tab>) {
 }
 
 @Composable
-private fun RowScope.TabNavigationItem(tab: Tab) {
+internal fun RowScope.TabNavigationItem(tab: Tab) {
     val tabNavigator = LocalTabNavigator.current
 
     BottomNavigationItem(
