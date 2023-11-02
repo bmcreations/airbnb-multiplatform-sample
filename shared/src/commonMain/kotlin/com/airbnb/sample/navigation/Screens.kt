@@ -9,6 +9,7 @@ import com.airbnb.sample.screens.inbox.RenderInbox
 import com.airbnb.sample.screens.login.RenderLogin
 import com.airbnb.sample.screens.main.RenderMain
 import com.airbnb.sample.screens.profile.RenderProfile
+import com.airbnb.sample.screens.settings.RenderCurrencySelection
 import com.airbnb.sample.screens.settings.RenderSettings
 import com.airbnb.sample.screens.trips.RenderTrips
 import com.airbnb.sample.screens.wishlist.RenderWishlists
@@ -59,6 +60,12 @@ sealed interface Screens : ScreenProvider {
         override val key = uniqueScreenKey
         @Composable
         override fun Content() = RenderSettings()
+
+        data object CurrencySelection: Screen {
+            override val key = uniqueScreenKey
+            @Composable
+            override fun Content() = RenderCurrencySelection()
+        }
     }
 
     data object LoginModal : Screen {

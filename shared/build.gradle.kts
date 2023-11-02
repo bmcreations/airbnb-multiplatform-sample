@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.buildConfig)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -43,6 +44,7 @@ kotlin {
                 implementation(libs.voyager.navigator.tabs)
                 implementation(libs.kotlin.inject.runtime)
                 implementation(libs.kotlin.viewmodel.core)
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.imageloader)
                 implementation(libs.logging)
                 implementation(libs.settings)

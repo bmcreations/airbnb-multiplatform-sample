@@ -17,6 +17,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-core = { module = "androidx.core:core-ktx", version = "1.12.0" }
 androidx-datastore = { module = "androidx.datastore:datastore-preferences", version = "1.0.0" }
 
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.0" }
 kotlin-inject-compiler = { module = 'me.tatarka.inject:kotlin-inject-compiler-ksp', version.ref = 'kotlinInject' }
 kotlin-inject-runtime = { module = 'me.tatarka.inject:kotlin-inject-runtime', version.ref = 'kotlinInject' }
 kotlin-viewmodel-core = { module = "com.rickclephas.kmm:kmm-viewmodel-core", version = "1.0.0-ALPHA-14"}
@@ -38,6 +39,7 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 ksp = { id = "com.google.devtools.ksp", version = "1.9.10-1.0.13" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version = "4.1.2" }

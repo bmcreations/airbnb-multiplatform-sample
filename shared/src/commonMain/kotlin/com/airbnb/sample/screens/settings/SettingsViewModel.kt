@@ -1,12 +1,16 @@
 package com.airbnb.sample.screens.settings
 
+import com.airbnb.sample.data.settings.Currency
 import com.airbnb.sample.domain.settings.SettingsRepository
 import com.airbnb.sample.utils.DispatcherProvider
 import com.airbnb.sample.viewmodel.BaseViewModel
+import com.airbnb.sample.viewmodel.launch
 import com.rickclephas.kmm.viewmodel.coroutineScope
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import me.tatarka.inject.annotations.Inject
 
@@ -19,13 +23,15 @@ class SettingsViewModel @Inject constructor(
 ) {
 
     data class State(
-        val currency: String,
+        val currency: Currency?,
+        val availableCurrencies: List<Currency>,
         val translateToEnglish: Boolean,
         val version: String,
     ) {
         companion object {
             val Empty = State(
-                currency = "",
+                currency = null,
+                availableCurrencies = emptyList(),
                 translateToEnglish = false,
                 version = airbnb.shared.BuildConfig.APP_VERSION
             )
@@ -33,13 +39,20 @@ class SettingsViewModel @Inject constructor(
     }
 
     sealed interface Event {
-        data class OnCurrencyUpdated(val currency: String): Event
+        data class OnCurrencyUpdated(val currency: Currency): Event
+        data class OnCurrenciesLoaded(val currencies: List<Currency>): Event
         data class OnTranslationEnabled(val enabled: Boolean): Event
     }
 
     init {
+
+        viewModelScope.launch {
+            dispatchEvent(Event.OnCurrenciesLoaded(Currency.entries.toList()))
+        }
+
         settings.currency.observe()
             .flowOn(dispatchers.IO)
+            .mapNotNull { Currency.findWithCode(it) }
             .onEach {
                 dispatchEvent(dispatchers.Main, Event.OnCurrencyUpdated(it))
             }.launchIn(viewModelScope.coroutineScope)
@@ -52,9 +65,9 @@ class SettingsViewModel @Inject constructor(
 
         eventFlow
             .filterIsInstance<Event.OnCurrencyUpdated>()
-            .onEach {
-                settings.currency.set(it.currency)
-            }.launchIn(viewModelScope.coroutineScope)
+            .map { it.currency.code }
+            .onEach { settings.currency.set(it) }
+            .launchIn(viewModelScope.coroutineScope)
 
         eventFlow
             .filterIsInstance<Event.OnTranslationEnabled>()
@@ -71,6 +84,10 @@ class SettingsViewModel @Inject constructor(
                 }
                 is Event.OnTranslationEnabled -> { state ->
                     state.copy(translateToEnglish = event.enabled)
+                }
+
+                is Event.OnCurrenciesLoaded -> { state ->
+                    state.copy(availableCurrencies = event.currencies)
                 }
             }
         }

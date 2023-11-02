@@ -5,5 +5,5 @@ import com.airbnb.sample.utils.Version
 
 
 interface PlatformComponent {
-    fun provideSettings(): SettingsProvider
+    val settingsProvider: SettingsProvider
 }

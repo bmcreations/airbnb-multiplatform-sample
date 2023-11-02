@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.utils.ui.addIf
@@ -37,6 +38,9 @@ object SettingItemDefaults {
             horizontal = MaterialTheme.dimens.inset,
             vertical = MaterialTheme.dimens.staticGrid.x3
         )
+
+    val TitleTextStyle: TextStyle
+        @Composable get() = MaterialTheme.typography.bodySmall
 }
 
 @Composable
@@ -46,6 +50,7 @@ fun SettingItem(
     showDivider: Boolean = true,
     icon: Painter,
     title: String,
+    titleTextStyle: TextStyle = SettingItemDefaults.TitleTextStyle,
 ) {
     SettingItem(
         modifier = modifier,
@@ -64,6 +69,7 @@ fun SettingItem(
     showDivider: Boolean = true,
     icon: Painter,
     title: String,
+    titleTextStyle: TextStyle = SettingItemDefaults.TitleTextStyle,
     onClick: (() -> Unit)? = null,
 ) {
     SettingItem(
@@ -71,6 +77,7 @@ fun SettingItem(
         icon = { SettingItemDefaults.icon(painter = icon) },
         contentPadding = contentPadding,
         title = title,
+        titleTextStyle = titleTextStyle,
         showDivider = showDivider,
         onClick = onClick
     )
@@ -83,6 +90,7 @@ fun SettingItem(
     contentPadding: PaddingValues = SettingItemDefaults.ContentPadding,
     showDivider: Boolean = true,
     title: String,
+    titleTextStyle: TextStyle = SettingItemDefaults.TitleTextStyle,
     onClick: (() -> Unit)? = null,
 ) {
     SettingItem(
@@ -90,6 +98,7 @@ fun SettingItem(
         icon = icon,
         contentPadding = contentPadding,
         title = title,
+        titleTextStyle = titleTextStyle,
         description = null,
         showDivider = showDivider,
         endSlot = {
@@ -108,6 +117,7 @@ fun SettingItem(
     description: String? = null,
     showDivider: Boolean = true,
     title: String,
+    titleTextStyle: TextStyle = SettingItemDefaults.TitleTextStyle,
     endSlot: @Composable RowScope.() -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -131,7 +141,7 @@ fun SettingItem(
                     Text(
                         modifier = Modifier.weight(1f),
                         text = title,
-                        style = MaterialTheme.typography.bodySmall
+                        style = titleTextStyle
                     )
                     endSlot()
                 }
