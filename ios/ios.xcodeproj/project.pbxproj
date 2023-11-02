@@ -339,7 +339,7 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.bmcreations.template;
+				PRODUCT_BUNDLE_IDENTIFIER = com.airbnb.sample;
 				PRODUCT_NAME = airbnb;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -370,7 +370,7 @@
 					"-framework",
 					shared,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = dev.bmcreations.template;
+				PRODUCT_BUNDLE_IDENTIFIER = com.airbnb.sample;
 				PRODUCT_NAME = airbnb;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

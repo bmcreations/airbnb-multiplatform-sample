@@ -7,8 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import cafe.adriel.voyager.core.annotation.InternalVoyagerApi
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.CurrentScreen
+import cafe.adriel.voyager.navigator.Navigator
+import com.airbnb.sample.utils.Platform
+import com.airbnb.sample.utils.shouldUseSwipeBack
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -42,6 +46,11 @@ actual class PlatformNavigator(
     actual val progress: Float
         get() = navigator.progress
 
+    actual var screensNavigator: Navigator? = null
+
+    actual val supportsGestureNavigation: Boolean
+        get() = Platform.shouldUseSwipeBack
+
     actual fun show(screen: Screen) {
         navigator.show(screen)
     }
@@ -51,34 +60,34 @@ actual class PlatformNavigator(
     }
 
     actual fun push(item: Screen) {
-        navigator.push(item)
+        screensNavigator?.push(item)
     }
 
     actual fun push(items: List<Screen>) {
-        navigator.push(items)
+        screensNavigator?.push(items)
     }
 
     actual fun replace(item: Screen) {
-        navigator.replace(item)
+        screensNavigator?.replace(item)
     }
 
     actual fun replaceAll(item: Screen) {
-        navigator.replaceAll(item)
+        screensNavigator?.replaceAll(item)
     }
 
     actual fun replaceAll(items: List<Screen>) {
-        navigator.replaceAll(items)
+        screensNavigator?.replaceAll(items)
     }
 
     actual fun pop(): Boolean {
-        return navigator.pop()
+        return screensNavigator?.pop() ?: false
     }
 
     actual fun popAll() {
-        navigator.popAll()
+        screensNavigator?.popAll()
     }
 
     actual fun popUntil(predicate: (Screen) -> Boolean): Boolean {
-        return navigator.popUntil(predicate)
+        return screensNavigator?.popUntil(predicate) ?: false
     }
 }

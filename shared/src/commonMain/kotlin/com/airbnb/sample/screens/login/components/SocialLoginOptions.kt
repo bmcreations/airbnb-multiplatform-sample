@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.sample.data.login.SocialType
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.theme.fullOutline
-import com.airbnb.sample.utils.ui.Row
+import com.airbnb.sample.ui.components.Row
 
 internal fun LazyListScope.socialLoginOptions(
     socialOptions: List<SocialType>,

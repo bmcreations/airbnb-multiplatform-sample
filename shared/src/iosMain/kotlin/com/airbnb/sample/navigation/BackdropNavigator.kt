@@ -27,9 +27,8 @@ import cafe.adriel.voyager.core.stack.Stack
 import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.compositionUniqueId
-import com.airbnb.sample.ui.components.AdaptiveBottomSheetScaffold
-import com.airbnb.sample.ui.components.adaptiveAnimationSpec
-import com.airbnb.sample.ui.components.adaptiveScrimColor
+import com.airbnb.sample.ui.components.CupertinoBackdropScaffold
+import com.airbnb.sample.ui.components.cupertinoAnimationSpec
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -45,13 +44,13 @@ val LocalBackdropNavigator: ProvidableCompositionLocal<BackdropNavigator> =
 fun BackdropNavigator(
     modifier: Modifier = Modifier,
     hideOnBackPress: Boolean = true,
-    scrimColor: Color = BackdropScaffoldDefaults.adaptiveScrimColor(),
+    scrimColor: Color = Color.Black.copy(alpha = 1 / 3f),
     sheetShape: Shape = MaterialTheme.shapes.large,
     sheetElevation: Dp = BackdropScaffoldDefaults.FrontLayerElevation,
     sheetBackgroundColor: Color = MaterialTheme.colorScheme.surface,
     sheetContentColor: Color = contentColorFor(sheetBackgroundColor),
     sheetGesturesEnabled: Boolean = true,
-    animationSpec: AnimationSpec<Float> = BackdropScaffoldDefaults.adaptiveAnimationSpec(),
+    animationSpec: AnimationSpec<Float> = BackdropScaffoldDefaults.cupertinoAnimationSpec(),
     key: String = compositionUniqueId(),
     sheetContent: BackdropNavigatorContent = { CurrentScreen() },
     content: BackdropNavigatorContent
@@ -79,7 +78,7 @@ fun BackdropNavigator(
         CompositionLocalProvider(
             LocalBackdropNavigator provides backdropNavigator,
         ) {
-            AdaptiveBottomSheetScaffold(
+            CupertinoBackdropScaffold(
                 modifier = modifier,
                 scaffoldState = scaffoldState,
                 frontLayerShape = sheetShape,

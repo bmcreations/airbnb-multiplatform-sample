@@ -8,6 +8,37 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 
 @Composable
+fun PaddingValues.copy(
+    start: Dp = calculateStartPadding(),
+    top: Dp = calculateTopPadding(),
+    end: Dp = calculateEndPadding(),
+    bottom: Dp = calculateBottomPadding()
+): PaddingValues {
+    val comparison = PaddingValues(start, top, end, bottom)
+    if (this == comparison) return this
+
+    return PaddingValues(
+        start = start,
+        top = top,
+        end = end,
+        bottom = bottom,
+    )
+}
+
+@Composable
+fun PaddingValues.copy(
+    horizontal: Dp = calculateHorizontalPadding(),
+    vertical: Dp = calculateVerticalPadding(),
+): PaddingValues {
+    val comparison = PaddingValues(horizontal, vertical)
+    if (this == comparison) return this
+
+    return PaddingValues(
+        horizontal, vertical
+    )
+}
+
+@Composable
 operator fun PaddingValues.plus(padding: PaddingValues): PaddingValues {
     val ldr = LocalLayoutDirection.current
     return PaddingValues(

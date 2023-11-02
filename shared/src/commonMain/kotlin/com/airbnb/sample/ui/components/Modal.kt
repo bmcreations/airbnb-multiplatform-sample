@@ -22,9 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.airbnb.sample.navigation.LocalPlatformNavigator
 import com.airbnb.sample.theme.dimens
-import com.airbnb.sample.utils.ui.Platform
+import com.airbnb.sample.utils.Platform
 import com.airbnb.sample.utils.ui.modalHeight
-import com.airbnb.sample.utils.ui.usesCloseAffordanceOnSheets
+import com.airbnb.sample.utils.usesCloseAffordanceOnSheets
 
 @Composable
 fun Modal(

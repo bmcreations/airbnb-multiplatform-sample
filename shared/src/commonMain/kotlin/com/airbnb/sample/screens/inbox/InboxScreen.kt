@@ -8,7 +8,7 @@ import com.airbnb.sample.navigation.Screens
 import com.airbnb.sample.ui.components.UserGateKeeper
 
 @Composable
-internal fun Screens.Inbox.Render() {
+internal fun Screens.Main.Inbox.RenderInbox() {
     Content(modifier = Modifier.fillMaxSize())
 }
 

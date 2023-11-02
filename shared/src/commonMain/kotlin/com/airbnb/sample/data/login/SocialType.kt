@@ -5,8 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import com.airbnb.sample.ui.resources.Drawables
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 
 sealed interface SocialType {
     @get:Composable

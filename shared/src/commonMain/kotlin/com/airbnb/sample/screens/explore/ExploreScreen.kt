@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import com.airbnb.sample.navigation.Screens
 
 @Composable
-internal fun Screens.Explore.Render() {
+internal fun Screens.Main.Explore.RenderExplore() {
     Content(modifier = Modifier.fillMaxSize())
 }
 

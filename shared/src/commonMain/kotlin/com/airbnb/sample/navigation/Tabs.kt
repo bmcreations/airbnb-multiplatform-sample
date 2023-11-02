@@ -7,14 +7,15 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import cafe.adriel.voyager.navigator.CurrentScreen
+import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabOptions
-import com.airbnb.sample.screens.explore.Render
-import com.airbnb.sample.screens.inbox.Render
-import com.airbnb.sample.screens.profile.Render
-import com.airbnb.sample.screens.trips.Render
-import com.airbnb.sample.screens.wishlist.Render
+import cafe.adriel.voyager.transitions.SlideTransition
+import com.airbnb.sample.screens.profile.RenderProfile
+import com.airbnb.sample.ui.components.TabContent
 import com.airbnb.sample.ui.resources.Drawables
 
 internal sealed interface Tabs {
@@ -32,7 +33,7 @@ internal sealed interface Tabs {
         data object Explore : Tabs, Tab {
             @Composable
             override fun Content() {
-                Screens.Explore.Render()
+                TabContent(Screens.Main.Explore)
             }
 
             override val options: TabOptions
@@ -51,7 +52,7 @@ internal sealed interface Tabs {
         data object Wishlists : Tabs, Tab {
             @Composable
             override fun Content() {
-                Screens.Wishlists.Render()
+                TabContent(Screens.Main.Wishlists)
             }
 
             override val options: TabOptions
@@ -71,9 +72,7 @@ internal sealed interface Tabs {
         data object Trips : Tabs, Tab {
             @Composable
             override fun Content() {
-                Navigator(Screens.Trips) {
-                    Screens.Trips.Render()
-                }
+                TabContent(Screens.Main.Trips)
             }
 
             override val options: TabOptions
@@ -93,9 +92,7 @@ internal sealed interface Tabs {
         data object Inbox : Tabs, Tab {
             @Composable
             override fun Content() {
-                Navigator(Screens.Inbox) {
-                    Screens.Inbox.Render()
-                }
+                TabContent(Screens.Main.Inbox)
             }
 
             override val options: TabOptions
@@ -115,9 +112,7 @@ internal sealed interface Tabs {
         data object Login : Tabs, Tab {
             @Composable
             override fun Content() {
-                Navigator(Screens.Profile) {
-                    Screens.Profile.Render()
-                }
+                TabContent(Screens.Main.Profile)
             }
 
             override val options: TabOptions

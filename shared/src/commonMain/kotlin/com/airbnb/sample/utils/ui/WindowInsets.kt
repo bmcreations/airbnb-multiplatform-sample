@@ -1,4 +1,4 @@
-package com.airbnb.sample.utils
+package com.airbnb.sample.utils.ui
 
 import androidx.compose.foundation.layout.WindowInsets
 

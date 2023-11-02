@@ -21,11 +21,11 @@ actual class MutableCreationExtras actual constructor(initialExtras: CreationExt
     /**
      * Associates the given [key] with [t]
      */
-    public actual operator fun <T> set(key: Key<T>, t: T) {
+    actual operator fun <T> set(key: Key<T>, t: T) {
         map[key] = t
     }
 
-    public override fun <T> get(key: Key<T>): T? {
+    override fun <T> get(key: Key<T>): T? {
         @Suppress("UNCHECKED_CAST")
         return map[key] as T?
     }

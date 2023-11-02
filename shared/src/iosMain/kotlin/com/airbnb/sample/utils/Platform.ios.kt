@@ -1,6 +1,5 @@
-package com.airbnb.sample.utils.ui
+package com.airbnb.sample.utils
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import platform.UIKit.*
@@ -11,8 +10,9 @@ actual fun getPlatformName(): String = "iOS"
 actual val Platform.usesCloseAffordanceOnSheets: Boolean
     get() = true
 
-actual val Platform.usesCupertinoBackdrop: Boolean
+actual val Platform.shouldUseSwipeBack: Boolean
     get() = true
+
 
 private val uiContentSizeCategoryToFontScaleMap = mapOf(
     UIContentSizeCategoryExtraSmall to 0.9f,

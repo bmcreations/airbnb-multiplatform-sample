@@ -8,7 +8,7 @@ import com.airbnb.sample.navigation.Screens
 import com.airbnb.sample.ui.components.UserGateKeeper
 
 @Composable
-internal fun Screens.Wishlists.Render() {
+internal fun Screens.Main.Wishlists.RenderWishlists() {
     Content(modifier = Modifier.fillMaxSize())
 }
 

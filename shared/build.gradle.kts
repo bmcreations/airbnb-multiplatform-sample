@@ -1,10 +1,12 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import java.text.SimpleDateFormat
+import java.util.Date
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.library)
     alias(libs.plugins.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.buildConfig)
 }
 
 @OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
@@ -43,14 +45,8 @@ kotlin {
                 implementation(libs.kotlin.viewmodel.core)
                 implementation(libs.imageloader)
                 implementation(libs.logging)
-            }
-
-            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
-
-            project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-                if(name != "kspCommonMainKotlinMetadata") {
-                    dependsOn("kspCommonMainKotlinMetadata")
-                }
+                implementation(libs.settings)
+                implementation(libs.settings.coroutines)
             }
         }
         val androidMain by getting {
@@ -87,12 +83,25 @@ android {
     }
 }
 
+buildConfig {
+    buildConfigField(
+        "String",
+        "APP_VERSION",
+        provider {
+            "\"${libs.versions.app.version.name.get()} " +
+                    "(${SimpleDateFormat("MMddyyyy").format(Date())})\""
+        }
+    )
+    useKotlinOutput()
+}
+
+
 dependencies {
     // KSP will eventually have better multiplatform support and we'll be able to simply have
     // `ksp libs.kotlinInject.compiler` in the dependencies block of each source set
     // https://github.com/google/ksp/pull/1021
-//    add("kspIosX64", libs.kotlin.inject.compiler)
-//    add("kspIosArm64", libs.kotlin.inject.compiler)
-//    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
-    add("kspCommonMainMetadata", libs.kotlin.inject.compiler)
+    add("kspIosX64", libs.kotlin.inject.compiler)
+    add("kspIosArm64", libs.kotlin.inject.compiler)
+    add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
+    add("kspAndroid", libs.kotlin.inject.compiler)
 }

@@ -1,35 +1,31 @@
 package com.airbnb.sample.navigation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.zIndex
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.navigator.tab.CurrentTab
-import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
-import cafe.adriel.voyager.navigator.tab.Tab
-import cafe.adriel.voyager.navigator.tab.TabNavigator
-import com.airbnb.sample.theme.dimens
-import com.airbnb.sample.utils.navigationBars
-import com.airbnb.sample.utils.statusBars
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.SlideTransition
+import com.airbnb.sample.ui.components.BackArrow
+import com.airbnb.sample.ui.components.TopAppBar
+import com.airbnb.sample.ui.components.TopAppBarTextStyle
 
 @Composable
 expect fun AppNavHost(content: @Composable () -> Unit)
@@ -37,6 +33,11 @@ expect fun AppNavHost(content: @Composable () -> Unit)
 expect class PlatformNavigator {
     val isVisible: Boolean
     val progress: Float
+
+    val supportsGestureNavigation: Boolean
+
+    var screensNavigator: Navigator?
+
     fun show(screen: Screen)
     fun hide()
     fun push(item: Screen)
@@ -63,59 +64,56 @@ val LocalPlatformNavigator: ProvidableCompositionLocal<PlatformNavigator> =
 @Composable
 fun AppNavigation() {
     AppNavHost {
-        // TODO: check for authenticated state
-        val tabs = remember { Tabs.anonymous }
+        Navigator(Screens.Main) { navigator ->
+            val platformNavigator = LocalPlatformNavigator.current
+            LaunchedEffect(navigator.lastItem) {
+                // update global navigator for platform access to support push/pop from a single
+                // navigator current
+                platformNavigator.screensNavigator = navigator
+            }
 
-        TabNavigator(Tabs.Anonymous.Explore) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize(),
-            ) {
-                Scaffold(
-                    modifier = Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .weight(1f),
-                    bottomBar = {
-                        TabBar(tabs)
-                    }
-                ) {
-                    CurrentTab()
-                }
-                Spacer(
-                    modifier = Modifier
-                        .windowInsetsBottomHeight(WindowInsets.navigationBars)
-                        .zIndex(999F)
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
-                )
+
+            SharedAppScaffolding(navigator) {
+                // TODO support swipe back on iOS
+                SlideTransition(navigator)
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun TabBar(tabs: List<Tab>) {
-    BottomNavigation(
-        backgroundColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground,
-        elevation = MaterialTheme.dimens.staticGrid.x2,
-    ) {
-        tabs.forEach { tab ->
-            TabNavigationItem(tab)
-        }
+private fun SharedAppScaffolding(
+    navigator: Navigator,
+    content: @Composable () -> Unit
+) {
+    val showTopBar by remember(navigator.lastItem) {
+        derivedStateOf { navigator.lastItem != Screens.Main }
     }
-}
+    Scaffold(
+        topBar = {
+            AnimatedVisibility(
+                visible = showTopBar,
+                enter = slideInHorizontally() + fadeIn()
+            ) {
+                TopAppBar(
+                    navigationIcon = { BackArrow(onClick = { navigator.pop() } ) },
+                    title = {
+                        Text(
+                            text = navigator.lastItem::class.simpleName.orEmpty(),
+                            style = MaterialTheme.typography.TopAppBarTextStyle,
+                        )
+                    }
+                )
+            }
+        },
+        content = {
+            val topPadding by animateDpAsState(
+                if (showTopBar) it.calculateTopPadding() else 0.dp)
 
-@Composable
-internal fun RowScope.TabNavigationItem(tab: Tab) {
-    val tabNavigator = LocalTabNavigator.current
-
-    BottomNavigationItem(
-        selected = tabNavigator.current == tab,
-        onClick = { tabNavigator.current = tab },
-        icon = { Icon(painter = tab.options.icon!!, contentDescription = tab.options.title) },
-        label = { Text(text = tab.options.title) },
-        selectedContentColor = MaterialTheme.colorScheme.primary,
-        unselectedContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = ContentAlpha.disabled)
+            Box(modifier = Modifier.padding(top = topPadding)) {
+                content()
+            }
+        }
     )
 }

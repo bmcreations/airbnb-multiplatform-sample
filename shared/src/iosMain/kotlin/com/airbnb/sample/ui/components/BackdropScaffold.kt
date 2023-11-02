@@ -11,24 +11,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.BackdropScaffold
 import androidx.compose.material.BackdropScaffoldDefaults
 import androidx.compose.material.BackdropScaffoldState
 import androidx.compose.material.BackdropValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.ResistanceConfig
+import androidx.compose.material.Scaffold
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberBackdropScaffoldState
 import androidx.compose.material.swipeable
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,98 +43,11 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import com.airbnb.sample.utils.statusBars
-import com.airbnb.sample.utils.ui.Platform
-import com.airbnb.sample.utils.ui.usesCupertinoBackdrop
-import org.lighthousegames.logging.logging
+import com.airbnb.sample.utils.ui.statusBars
+import platform.UIKit.UIApplication
+import platform.UIKit.UIStatusBarStyleLightContent
+import platform.UIKit.setStatusBarStyle
 import kotlin.math.roundToInt
-
-@Composable
-fun BackdropScaffoldDefaults.adaptiveAnimationSpec() =
-    when (Platform.usesCupertinoBackdrop) {
-        true -> BackdropScaffoldDefaults.cupertinoAnimationSpec()
-        else -> SwipeableDefaults.AnimationSpec
-    }
-
-@Composable
-fun BackdropScaffoldDefaults.adaptiveScrimColor() =
-    when (Platform.usesCupertinoBackdrop) {
-        true -> Color.Black.copy(alpha = 1 / 3f)
-        else -> BackdropScaffoldDefaults.frontLayerScrimColor
-    }
-
-@Composable
-@ExperimentalMaterialApi
-fun AdaptiveBottomSheetScaffold(
-    appBar: @Composable () -> Unit = { },
-    backLayerContent: @Composable () -> Unit = { },
-    frontLayerContent: @Composable () -> Unit = { },
-    modifier: Modifier = Modifier,
-    scaffoldState: BackdropScaffoldState = rememberBackdropScaffoldState(
-        initialValue = BackdropValue.Revealed,
-        animationSpec = BackdropScaffoldDefaults.adaptiveAnimationSpec()
-    ),
-    gesturesEnabled: Boolean = true,
-    peekHeight: Dp = 0.dp,
-    headerHeight: Dp = 0.dp,
-    persistentAppBar: Boolean = false,
-    stickyFrontLayer: Boolean = false,
-    backLayerBackgroundColor: Color = MaterialTheme.colorScheme.background,
-    backLayerContentColor: Color = contentColorFor(backLayerBackgroundColor),
-    frontLayerShape: Shape = MaterialTheme.shapes.large,
-    frontLayerElevation: Dp = BackdropScaffoldDefaults.FrontLayerElevation,
-    frontLayerBackgroundColor: Color = MaterialTheme.colorScheme.surface,
-    frontLayerContentColor: Color = contentColorFor(frontLayerBackgroundColor),
-    frontLayerScrimColor: Color = BackdropScaffoldDefaults.adaptiveScrimColor(),
-    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) }
-) {
-    when (Platform.usesCupertinoBackdrop) {
-        true ->
-            CupertinoBackdropScaffold(
-                appBar = appBar,
-                backLayerContent = backLayerContent,
-                frontLayerContent = frontLayerContent,
-                modifier = modifier,
-                scaffoldState = scaffoldState,
-                gesturesEnabled = gesturesEnabled,
-                backLayerBackgroundColor = backLayerBackgroundColor,
-                backLayerContentColor = backLayerContentColor,
-                frontLayerShape = frontLayerShape,
-                frontLayerElevation = frontLayerElevation,
-                frontLayerBackgroundColor = frontLayerBackgroundColor,
-                frontLayerContentColor = frontLayerContentColor,
-                frontLayerScrimColor = frontLayerScrimColor,
-                snackbarHost = snackbarHost
-            )
-
-
-        else -> BackdropScaffold(
-            appBar = appBar,
-            backLayerContent = backLayerContent,
-            frontLayerContent = frontLayerContent,
-            modifier = modifier,
-            scaffoldState = scaffoldState,
-            gesturesEnabled = gesturesEnabled,
-            peekHeight = peekHeight,
-            headerHeight = headerHeight,
-            persistentAppBar = persistentAppBar,
-            stickyFrontLayer = stickyFrontLayer,
-            backLayerBackgroundColor = backLayerBackgroundColor,
-            backLayerContentColor = backLayerContentColor,
-            frontLayerShape = frontLayerShape,
-            frontLayerElevation = frontLayerElevation,
-            frontLayerBackgroundColor = frontLayerBackgroundColor,
-            frontLayerContentColor = frontLayerContentColor,
-            frontLayerScrimColor = frontLayerScrimColor,
-            snackbarHost = snackbarHost
-        )
-    }
-}
-
-
-@ExperimentalMaterialApi
-@Composable
-internal expect fun applyPlatformBackdropScaffoldStyle(state: BackdropScaffoldState)
 
 fun BackdropScaffoldDefaults.cupertinoAnimationSpec() =
     spring<Float>(stiffness = Spring.StiffnessMediumLow)
@@ -140,13 +55,13 @@ fun BackdropScaffoldDefaults.cupertinoAnimationSpec() =
 @ExperimentalMaterialApi
 @Composable
 fun CupertinoBackdropScaffold(
-    appBar: @Composable () -> Unit,
+    appBar: @Composable () -> Unit = {},
     backLayerContent: @Composable () -> Unit,
     frontLayerContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     scaffoldState: BackdropScaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed),
     gesturesEnabled: Boolean = true,
-    backLayerBackgroundColor: Color = Color.Black,
+    backLayerBackgroundColor: Color = MaterialTheme.colorScheme.background,
     backLayerContentColor: Color = contentColorFor(backLayerBackgroundColor),
     frontLayerShape: Shape = BackdropScaffoldDefaults.frontLayerShape,
     frontLayerElevation: Dp = BackdropScaffoldDefaults.FrontLayerElevation,
@@ -208,7 +123,8 @@ fun CupertinoBackdropScaffold(
             )
         }
 
-        Box(Modifier
+        Box(
+            Modifier
             .width(density.run { constraints.maxWidth.toDp() })
             .height(density.run { height.toDp() })
             .align(Alignment.BottomCenter)
@@ -244,5 +160,29 @@ fun CupertinoBackdropScaffold(
                 frontLayerContent()
             }
         }
+    }
+}
+
+@ExperimentalMaterialApi
+@Composable
+private fun applyPlatformBackdropScaffoldStyle(state: BackdropScaffoldState) {
+    val oldStyle = remember {
+        UIApplication.sharedApplication.statusBarStyle
+    }
+
+    val light by remember {
+        derivedStateOf {
+            state.progress.from == BackdropValue.Revealed && state.progress.to == BackdropValue.Concealed && state.progress.fraction > .5f ||
+                    state.progress.from == BackdropValue.Concealed && state.progress.to == BackdropValue.Revealed && state.progress.fraction < .5f ||
+                    state.progress.from == BackdropValue.Concealed && state.progress.to == BackdropValue.Concealed
+        }
+    }
+
+    DisposableEffect(light) {
+        UIApplication.sharedApplication.setStatusBarStyle(
+            if (light) UIStatusBarStyleLightContent else oldStyle,
+            true
+        )
+        onDispose { UIApplication.sharedApplication.setStatusBarStyle(oldStyle, true) }
     }
 }

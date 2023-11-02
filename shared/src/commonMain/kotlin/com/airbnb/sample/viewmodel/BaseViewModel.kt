@@ -1,12 +1,6 @@
 package com.airbnb.sample.viewmodel
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisallowComposableCalls
 import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.rememberScreenModel
-import cafe.adriel.voyager.core.screen.Screen
-import com.airbnb.sample.inject.ViewModelComponent
-import com.airbnb.sample.inject.create
 import com.rickclephas.kmm.viewmodel.KMMViewModel
 import com.rickclephas.kmm.viewmodel.ViewModelScope
 import com.rickclephas.kmm.viewmodel.coroutineScope

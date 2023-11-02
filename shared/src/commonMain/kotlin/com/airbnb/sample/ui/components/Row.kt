@@ -1,4 +1,4 @@
-package com.airbnb.sample.utils.ui
+package com.airbnb.sample.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.airbnb.sample.utils.ui.calculateEndPadding
+import com.airbnb.sample.utils.ui.calculateStartPadding
+import com.airbnb.sample.utils.ui.calculateVerticalPadding
 
 @Composable
 inline fun Row(

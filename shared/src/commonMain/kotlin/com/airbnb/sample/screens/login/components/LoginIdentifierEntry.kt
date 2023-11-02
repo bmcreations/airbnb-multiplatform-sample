@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
@@ -40,9 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
 import com.airbnb.sample.theme.dimens
-import com.airbnb.sample.utils.ui.Row
+import com.airbnb.sample.ui.components.Row
 import com.airbnb.sample.utils.ui.addIf
 
 @Composable

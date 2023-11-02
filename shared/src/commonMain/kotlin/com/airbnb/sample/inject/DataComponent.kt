@@ -6,7 +6,8 @@ import me.tatarka.inject.annotations.Component
 import me.tatarka.inject.annotations.Provides
 
 @Component
-abstract class AppComponent {
+@ScreenModelScope
+abstract class DataComponent {
     @Provides
     fun providerDefaultDispatcher(): DispatcherProvider = DefaultDispatchers()
 }

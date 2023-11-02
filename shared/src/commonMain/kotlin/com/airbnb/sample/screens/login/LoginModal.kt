@@ -33,7 +33,7 @@ import com.airbnb.sample.ui.components.GradientButton
 import com.airbnb.sample.viewmodel.screenViewModel
 
 @Composable
-internal fun Screens.LoginModal.Render() {
+internal fun Screens.LoginModal.RenderLogin() {
     Modal(
         title = "Log in or sign up"
     ) {

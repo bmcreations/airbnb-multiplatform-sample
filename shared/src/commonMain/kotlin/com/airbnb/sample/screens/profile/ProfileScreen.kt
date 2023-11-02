@@ -35,12 +35,14 @@ import com.airbnb.sample.theme.secondaryText
 import com.airbnb.sample.ui.components.GradientButton
 import com.airbnb.sample.ui.components.LargeHeader
 import com.airbnb.sample.ui.components.SettingItem
+import com.airbnb.sample.ui.components.SettingItemDefaults
 import com.airbnb.sample.ui.resources.Drawables
+import com.airbnb.sample.utils.ui.copy
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-internal fun Screens.Profile.Render() {
+internal fun RenderProfile() {
     Content(modifier = Modifier.fillMaxSize())
 }
 
@@ -164,26 +166,26 @@ private fun Content(
         item {
             Column(modifier = Modifier.padding(top = MaterialTheme.dimens.grid.x3)) {
                 SettingItem(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.dimens.inset),
+                    modifier = Modifier.fillMaxWidth(),
                     icon = Drawables.Settings,
-                    title = "Settings"
+                    title = "Settings",
+                    contentPadding = SettingItemDefaults.ContentPadding.copy(vertical = MaterialTheme.dimens.staticGrid.x2),
                 ) {
                     navigator.push(Screens.Settings)
                 }
 
                 SettingItem(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.dimens.inset),
+                    modifier = Modifier.fillMaxWidth(),
                     icon = rememberVectorPainter(Icons.Rounded.Accessibility), // TODO: find an icon
+                    contentPadding = SettingItemDefaults.ContentPadding.copy(vertical = MaterialTheme.dimens.staticGrid.x2),
                     title = "Accessibility"
                 ) {
 
                 }
 
                 SettingItem(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = MaterialTheme.dimens.inset),
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = SettingItemDefaults.ContentPadding.copy(vertical = MaterialTheme.dimens.staticGrid.x2),
                     icon = Drawables.HelpCircle,
                     title = "Visit the Help Center",
                     showDivider = false,

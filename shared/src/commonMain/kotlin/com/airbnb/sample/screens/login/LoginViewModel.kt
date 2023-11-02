@@ -1,9 +1,5 @@
 package com.airbnb.sample.screens.login
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import com.airbnb.sample.data.login.SocialType
 import com.airbnb.sample.viewmodel.BaseViewModel
 import com.airbnb.sample.utils.DispatcherProvider
@@ -15,8 +11,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import me.tatarka.inject.annotations.Inject
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import org.jetbrains.compose.resources.painterResource
 
 
 class LoginViewModel @Inject constructor(
@@ -95,7 +89,7 @@ class LoginViewModel @Inject constructor(
             }.launchIn(viewModelScope.coroutineScope)
     }
 
-    companion object {
+    internal companion object {
         val updateStateForEvent: (Event) -> ((State) -> State) = { event ->
             when (event) {
                 is Event.OnCountrySelected -> { state -> state.copy(region = event.region) }
