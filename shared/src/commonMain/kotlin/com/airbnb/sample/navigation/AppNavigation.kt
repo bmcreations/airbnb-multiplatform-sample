@@ -23,6 +23,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.core.screen.uniqueScreenKey
 import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.airbnb.sample.ui.components.BackArrow
@@ -102,7 +103,7 @@ private fun SharedAppScaffolding(
                     navigationIcon = { BackArrow(onClick = { navigator.pop() } ) },
                     title = {
                         Text(
-                            text = navigator.lastItem::class.simpleName.orEmpty(),
+                            text = navigator.lastItem.key,
                         )
                     }
                 )

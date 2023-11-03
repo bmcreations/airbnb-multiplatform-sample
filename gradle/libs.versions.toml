@@ -34,6 +34,8 @@ voyager-navigator = { module = "cafe.adriel.voyager:voyager-bottom-sheet-navigat
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-navigator-tabs = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
 
+webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.6.0" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }

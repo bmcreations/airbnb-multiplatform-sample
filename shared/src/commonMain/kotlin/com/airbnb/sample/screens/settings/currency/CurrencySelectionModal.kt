@@ -26,7 +26,7 @@ import com.airbnb.sample.viewmodel.screenViewModel
 @Composable
 fun Screens.Settings.CurrencySelection.RenderCurrencySelection() {
     Modal(
-        title = "Choose a currency"
+        title = key,
     ) {
         Content(
             modifier = Modifier,

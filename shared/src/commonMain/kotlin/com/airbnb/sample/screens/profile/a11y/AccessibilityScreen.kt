@@ -1,4 +1,4 @@
-package com.airbnb.sample.screens.settings.a11y
+package com.airbnb.sample.screens.profile.a11y
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,12 +19,12 @@ import com.airbnb.sample.ui.components.ToggleSwitch
 import com.airbnb.sample.viewmodel.screenViewModel
 
 @Composable
-fun Screens.Settings.Accessibility.RenderAccessibility() {
+fun Screens.Main.Profile.Accessibility.RenderAccessibility() {
     Content(modifier = Modifier.fillMaxSize())
 }
 
 @Composable
-private fun Screens.Settings.Accessibility.Content(
+private fun Screens.Main.Profile.Accessibility.Content(
     modifier: Modifier = Modifier,
     viewModel: AccessibilityViewModel = screenViewModel(),
 ) {

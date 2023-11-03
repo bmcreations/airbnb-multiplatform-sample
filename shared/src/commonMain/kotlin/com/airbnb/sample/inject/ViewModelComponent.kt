@@ -3,7 +3,7 @@ package com.airbnb.sample.inject
 import cafe.adriel.voyager.core.model.ScreenModel
 import com.airbnb.sample.screens.login.LoginViewModel
 import com.airbnb.sample.screens.settings.SettingsViewModel
-import com.airbnb.sample.screens.settings.a11y.AccessibilityViewModel
+import com.airbnb.sample.screens.profile.a11y.AccessibilityViewModel
 import me.tatarka.inject.annotations.Component
 
 @Component

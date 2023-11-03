@@ -1,4 +1,4 @@
-package com.airbnb.sample.screens.settings.a11y
+package com.airbnb.sample.screens.profile.a11y
 
 import com.airbnb.sample.domain.settings.SettingsRepository
 import com.airbnb.sample.screens.settings.SettingsViewModel

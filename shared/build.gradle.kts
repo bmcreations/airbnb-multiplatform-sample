@@ -49,6 +49,7 @@ kotlin {
                 implementation(libs.logging)
                 implementation(libs.settings)
                 implementation(libs.settings.coroutines)
+                implementation(libs.webview)
             }
         }
         val androidMain by getting {

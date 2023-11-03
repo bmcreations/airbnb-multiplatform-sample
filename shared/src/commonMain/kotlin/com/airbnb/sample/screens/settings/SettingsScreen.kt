@@ -95,7 +95,7 @@ private fun SettingsScreen(
                 title = "Terms of Service",
                 dividerColor = MaterialTheme.colorScheme.outlineVariant,
                 onClick = {
-
+                    navigator.push(Screens.Settings.Terms)
                 }
             )
         }
@@ -105,7 +105,7 @@ private fun SettingsScreen(
                 title = "Privacy Policy",
                 dividerColor = MaterialTheme.colorScheme.outlineVariant,
                 onClick = {
-
+                    navigator.push(Screens.Settings.PrivacyPolicy)
                 }
             )
         }
@@ -115,7 +115,7 @@ private fun SettingsScreen(
                 title = "Your Privacy Choices",
                 dividerColor = MaterialTheme.colorScheme.outlineVariant,
                 onClick = {
-
+                    navigator.push(Screens.Settings.PrivacyChoices)
                 }
             )
         }
