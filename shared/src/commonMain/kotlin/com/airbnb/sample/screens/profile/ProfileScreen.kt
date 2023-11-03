@@ -180,7 +180,7 @@ private fun Content(
                     contentPadding = SettingItemDefaults.ContentPadding.copy(vertical = MaterialTheme.dimens.staticGrid.x2),
                     title = "Accessibility"
                 ) {
-
+                    navigator.push(Screens.Settings.Accessibility)
                 }
 
                 SettingItem(

@@ -6,6 +6,7 @@ import com.airbnb.sample.utils.DispatcherProvider
 import com.airbnb.sample.viewmodel.BaseViewModel
 import com.airbnb.sample.viewmodel.launch
 import com.rickclephas.kmm.viewmodel.coroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
@@ -66,13 +67,16 @@ class SettingsViewModel @Inject constructor(
         eventFlow
             .filterIsInstance<Event.OnCurrencyUpdated>()
             .map { it.currency.code }
+            .distinctUntilChanged()
             .onEach { settings.currency.set(it) }
             .launchIn(viewModelScope.coroutineScope)
 
         eventFlow
             .filterIsInstance<Event.OnTranslationEnabled>()
+            .map { it.enabled }
+            .distinctUntilChanged()
             .onEach {
-                settings.translateToEnglish.set(it.enabled)
+                settings.translateToEnglish.set(it)
             }.launchIn(viewModelScope.coroutineScope)
     }
 

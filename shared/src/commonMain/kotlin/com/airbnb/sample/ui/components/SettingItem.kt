@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +42,9 @@ object SettingItemDefaults {
 
     val TitleTextStyle: TextStyle
         @Composable get() = MaterialTheme.typography.bodySmall
+
+    val DescriptionTextStyle: TextStyle
+        @Composable get() = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.W400)
 }
 
 @Composable
@@ -48,16 +52,21 @@ fun SettingItem(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = SettingItemDefaults.ContentPadding,
     showDivider: Boolean = true,
+    dividerColor: Color = MaterialTheme.colorScheme.outline,
     icon: Painter,
     title: String,
     titleTextStyle: TextStyle = SettingItemDefaults.TitleTextStyle,
+    descriptionTextStyle: TextStyle = SettingItemDefaults.DescriptionTextStyle,
 ) {
     SettingItem(
         modifier = modifier,
         icon = { SettingItemDefaults.icon(painter = icon) },
         contentPadding = contentPadding,
         title = title,
+        titleTextStyle = titleTextStyle,
+        descriptionTextStyle = descriptionTextStyle,
         showDivider = showDivider,
+        dividerColor = dividerColor,
         onClick = null
     )
 }
@@ -67,9 +76,11 @@ fun SettingItem(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = SettingItemDefaults.ContentPadding,
     showDivider: Boolean = true,
+    dividerColor: Color = MaterialTheme.colorScheme.outline,
     icon: Painter,
     title: String,
     titleTextStyle: TextStyle = SettingItemDefaults.TitleTextStyle,
+    descriptionTextStyle: TextStyle = SettingItemDefaults.DescriptionTextStyle,
     onClick: (() -> Unit)? = null,
 ) {
     SettingItem(
@@ -78,7 +89,9 @@ fun SettingItem(
         contentPadding = contentPadding,
         title = title,
         titleTextStyle = titleTextStyle,
+        descriptionTextStyle = descriptionTextStyle,
         showDivider = showDivider,
+        dividerColor = dividerColor,
         onClick = onClick
     )
 }
@@ -89,8 +102,10 @@ fun SettingItem(
     icon: (@Composable () -> Unit)? = null,
     contentPadding: PaddingValues = SettingItemDefaults.ContentPadding,
     showDivider: Boolean = true,
+    dividerColor: Color = MaterialTheme.colorScheme.outline,
     title: String,
     titleTextStyle: TextStyle = SettingItemDefaults.TitleTextStyle,
+    descriptionTextStyle: TextStyle = SettingItemDefaults.DescriptionTextStyle,
     onClick: (() -> Unit)? = null,
 ) {
     SettingItem(
@@ -99,8 +114,10 @@ fun SettingItem(
         contentPadding = contentPadding,
         title = title,
         titleTextStyle = titleTextStyle,
+        descriptionTextStyle = descriptionTextStyle,
         description = null,
         showDivider = showDivider,
+        dividerColor = dividerColor,
         endSlot = {
             if (onClick != null) {
                 Icon(Icons.Rounded.KeyboardArrowRight, contentDescription = null)
@@ -116,8 +133,10 @@ fun SettingItem(
     icon: (@Composable () -> Unit)? = null,
     description: String? = null,
     showDivider: Boolean = true,
+    dividerColor: Color = MaterialTheme.colorScheme.outline,
     title: String,
     titleTextStyle: TextStyle = SettingItemDefaults.TitleTextStyle,
+    descriptionTextStyle: TextStyle = SettingItemDefaults.DescriptionTextStyle,
     endSlot: @Composable RowScope.() -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -149,7 +168,7 @@ fun SettingItem(
                     Text(
                         modifier = Modifier.fillMaxWidth(0.75f),
                         text = description,
-                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.W400)
+                        style = descriptionTextStyle,
                     )
                 }
             }
@@ -157,7 +176,7 @@ fun SettingItem(
         if (showDivider) {
             Divider(
                 modifier = Modifier.padding(horizontal = MaterialTheme.dimens.inset),
-                color = MaterialTheme.colorScheme.outline
+                color = dividerColor
             )
         }
     }

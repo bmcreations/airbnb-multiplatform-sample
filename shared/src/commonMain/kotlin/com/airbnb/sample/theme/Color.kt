@@ -51,7 +51,7 @@ val ColorScheme.fullOutline: Color
     )
 
 val ColorScheme.secondaryText: Color
-    @Composable get() = MaterialTheme.colorScheme.onBackground.copy(alpha = ContentAlpha.medium)
+    @Composable get() = Color(0xFF717171)
 
 val ColorScheme.primaryToPrimaryVariantGradient: Brush
     @Composable get() = Brush.horizontalGradient(

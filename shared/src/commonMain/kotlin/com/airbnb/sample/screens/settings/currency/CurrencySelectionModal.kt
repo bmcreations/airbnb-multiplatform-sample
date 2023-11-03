@@ -1,4 +1,4 @@
-package com.airbnb.sample.screens.settings
+package com.airbnb.sample.screens.settings.currency
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.airbnb.sample.data.settings.Currency
 import com.airbnb.sample.navigation.LocalPlatformNavigator
 import com.airbnb.sample.navigation.Screens
+import com.airbnb.sample.screens.settings.SettingsViewModel
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.ui.components.Modal
 import com.airbnb.sample.ui.components.SettingItem

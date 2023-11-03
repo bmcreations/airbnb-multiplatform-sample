@@ -23,5 +23,9 @@ class SettingsRepository(
     val currency = StringSetting(settings, "currency", settingsProvider.defaultCurrency().code)
     val translateToEnglish = BooleanSetting(settings, "translate_to_english", true)
 
+    // a11y
+    val mapZoomControls = BooleanSetting(settings, "map_zoom_control_button", false)
+    val mapPanControls = BooleanSetting(settings, "map_pan_control_button", false)
+
     fun clear() = settings.clear()
 }

@@ -3,7 +3,9 @@ package com.airbnb.sample.navigation
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
@@ -25,7 +27,6 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import com.airbnb.sample.ui.components.BackArrow
 import com.airbnb.sample.ui.components.TopAppBar
-import com.airbnb.sample.ui.components.TopAppBarTextStyle
 
 @Composable
 expect fun AppNavHost(content: @Composable () -> Unit)
@@ -94,14 +95,14 @@ private fun SharedAppScaffolding(
         topBar = {
             AnimatedVisibility(
                 visible = showTopBar,
-                enter = slideInHorizontally() + fadeIn()
+                enter = slideInHorizontally() + fadeIn(),
+                exit = fadeOut(),
             ) {
                 TopAppBar(
                     navigationIcon = { BackArrow(onClick = { navigator.pop() } ) },
                     title = {
                         Text(
                             text = navigator.lastItem::class.simpleName.orEmpty(),
-                            style = MaterialTheme.typography.TopAppBarTextStyle,
                         )
                     }
                 )

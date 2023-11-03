@@ -21,6 +21,3 @@ expect fun TopAppBar(
     windowInsets: WindowInsets = TopAppBarDefaults.windowInsets,
     scrollBehavior: TopAppBarScrollBehavior? = null
 )
-
-@get:Composable
-expect val Typography.TopAppBarTextStyle: TextStyle

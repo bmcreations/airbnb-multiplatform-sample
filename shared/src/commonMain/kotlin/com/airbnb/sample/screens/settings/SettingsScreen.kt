@@ -50,6 +50,7 @@ private fun SettingsScreen(
                     navigator.show(Screens.Settings.CurrencySelection)
                 },
                 title = "Currency",
+                dividerColor = MaterialTheme.colorScheme.outlineVariant,
                 endSlot = {
                     if (state.currency != null) {
                         Text(
@@ -66,6 +67,7 @@ private fun SettingsScreen(
             SettingItem(
                 title = "Translation",
                 description = "Automatically translate descriptions and reviews to english",
+                dividerColor = MaterialTheme.colorScheme.outlineVariant,
                 endSlot = {
                     ToggleSwitch(
                         checked = state.translateToEnglish,
@@ -91,6 +93,7 @@ private fun SettingsScreen(
         item {
             SettingItem(
                 title = "Terms of Service",
+                dividerColor = MaterialTheme.colorScheme.outlineVariant,
                 onClick = {
 
                 }
@@ -100,6 +103,7 @@ private fun SettingsScreen(
         item {
             SettingItem(
                 title = "Privacy Policy",
+                dividerColor = MaterialTheme.colorScheme.outlineVariant,
                 onClick = {
 
                 }
@@ -109,6 +113,7 @@ private fun SettingsScreen(
         item {
             SettingItem(
                 title = "Your Privacy Choices",
+                dividerColor = MaterialTheme.colorScheme.outlineVariant,
                 onClick = {
 
                 }
