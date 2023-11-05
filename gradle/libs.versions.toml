@@ -5,19 +5,22 @@ android-compileSdk = "34"
 android-minSdk = "24"
 agp = "8.3.0-alpha11"
 kotlin = "1.9.10"
-compose-plugin = "1.5.10-rc01"
+compose-plugin = "1.5.10"
 compose-compiler = "1.5.3"
 voyager = "1.0.0-rc07"
 kotlinInject = "0.6.1"
 settings = "1.1.0"
 
 [libraries]
+android-threeten = { module = "com.jakewharton.threetenabp:threetenabp", version = "1.4.6" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0" }
 androidx-core = { module = "androidx.core:core-ktx", version = "1.12.0" }
 androidx-datastore = { module = "androidx.datastore:datastore-preferences", version = "1.0.0" }
 
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.0" }
+
 kotlin-inject-compiler = { module = 'me.tatarka.inject:kotlin-inject-compiler-ksp', version.ref = 'kotlinInject' }
 kotlin-inject-runtime = { module = 'me.tatarka.inject:kotlin-inject-runtime', version.ref = 'kotlinInject' }
 kotlin-viewmodel-core = { module = "com.rickclephas.kmm:kmm-viewmodel-core", version = "1.0.0-ALPHA-14"}

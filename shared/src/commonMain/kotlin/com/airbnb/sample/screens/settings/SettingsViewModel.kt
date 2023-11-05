@@ -51,7 +51,7 @@ class SettingsViewModel @Inject constructor(
             dispatchEvent(Event.OnCurrenciesLoaded(Currency.entries.toList()))
         }
 
-        settings.currency.observe()
+        settings.currencyIsoCode.observe()
             .flowOn(dispatchers.IO)
             .mapNotNull { Currency.findWithCode(it) }
             .onEach {
@@ -68,7 +68,7 @@ class SettingsViewModel @Inject constructor(
             .filterIsInstance<Event.OnCurrencyUpdated>()
             .map { it.currency.code }
             .distinctUntilChanged()
-            .onEach { settings.currency.set(it) }
+            .onEach { settings.currencyIsoCode.set(it) }
             .launchIn(viewModelScope.coroutineScope)
 
         eventFlow

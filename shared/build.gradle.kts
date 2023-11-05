@@ -45,6 +45,7 @@ kotlin {
                 implementation(libs.kotlin.inject.runtime)
                 implementation(libs.kotlin.viewmodel.core)
                 implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.datetime)
                 implementation(libs.imageloader)
                 implementation(libs.logging)
                 implementation(libs.settings)
@@ -57,6 +58,7 @@ kotlin {
                 api(libs.androidx.activity.compose)
                 api(libs.androidx.core)
                 api(libs.androidx.appcompat)
+                api(libs.android.threeten)
             }
         }
     }

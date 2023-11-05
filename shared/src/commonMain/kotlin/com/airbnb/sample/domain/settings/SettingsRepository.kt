@@ -4,8 +4,6 @@ import com.airbnb.sample.data.settings.BooleanSetting
 import com.airbnb.sample.data.settings.Currency
 import com.airbnb.sample.data.settings.StringSetting
 import com.russhwolf.settings.ObservableSettings
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.Json.Default.encodeToString
 import me.tatarka.inject.annotations.Inject
 
 interface SettingsProvider {
@@ -20,7 +18,7 @@ class SettingsRepository(
 
     private val settings = settingsProvider.provide()
 
-    val currency = StringSetting(settings, "currency", settingsProvider.defaultCurrency().code)
+    val currencyIsoCode = StringSetting(settings, "currency", settingsProvider.defaultCurrency().code)
     val translateToEnglish = BooleanSetting(settings, "translate_to_english", true)
 
     // a11y
