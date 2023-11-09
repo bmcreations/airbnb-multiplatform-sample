@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -44,6 +45,7 @@ import com.airbnb.sample.navigation.Tabs
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.utils.ui.navigationBars
 import com.airbnb.sample.utils.ui.statusBars
+import org.lighthousegames.logging.logging
 
 val LocalBottomPadding: ProvidableCompositionLocal<Dp> =
     staticCompositionLocalOf { error("LocalBottomPadding not initialized") }
@@ -56,7 +58,7 @@ internal fun RenderMain() {
     // TODO: check for authenticated state
     val tabs = remember { Tabs.anonymous }
 
-    var bottomTranslation by remember {
+    var bottomTranslation by rememberSaveable {
         mutableFloatStateOf(0f)
     }
     CompositionLocalProvider(
@@ -100,6 +102,7 @@ private fun TabBar(tabs: List<Tab>, offsetProvider: () -> Float) {
         modifier = Modifier
             .onPlaced { with (density) { height = it.size.height.toDp() } }
             .graphicsLayer {
+                logging("tab").d { "offset=${offsetProvider()}" }
             translationY = height.toPx() * (1 - offsetProvider())
         },
         backgroundColor = MaterialTheme.colorScheme.background,

@@ -3,6 +3,7 @@ import java.util.Date
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    kotlin("native.cocoapods")
     alias(libs.plugins.android.library)
     alias(libs.plugins.compose)
     alias(libs.plugins.ksp)
@@ -16,13 +17,25 @@ kotlin {
     androidTarget()
 
     listOf(
-        iosX64(),
+//        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "shared"
+    ).forEach { target ->
+        target.binaries.framework {
             isStatic = true
+        }
+    }
+
+    cocoapods {
+        version = "1.0.0"
+        summary = "Some description for the Shared Module"
+        homepage = "Link to the Shared Module homepage"
+        ios.deploymentTarget = "14.1"
+        podfile = project.file("../ios/Podfile") // why doesn't it load the cocoapods from the iosApp podfile?
+
+        // Must define the pods that are in the Podfile (unknown why?)
+        pod("GoogleMaps") {
+            version = "8.2.0"
         }
     }
 
@@ -51,6 +64,7 @@ kotlin {
                 implementation(libs.settings)
                 implementation(libs.settings.coroutines)
                 implementation(libs.webview)
+                implementation(libs.uuid)
             }
         }
         val androidMain by getting {
@@ -59,6 +73,9 @@ kotlin {
                 api(libs.androidx.core)
                 api(libs.androidx.appcompat)
                 api(libs.android.threeten)
+                api(libs.google.play.location)
+                api(libs.google.maps.compose)
+                api(libs.google.maps.compose.utils)
             }
         }
     }
@@ -105,7 +122,7 @@ dependencies {
     // KSP will eventually have better multiplatform support and we'll be able to simply have
     // `ksp libs.kotlinInject.compiler` in the dependencies block of each source set
     // https://github.com/google/ksp/pull/1021
-    add("kspIosX64", libs.kotlin.inject.compiler)
+//    add("kspIosX64", libs.kotlin.inject.compiler)
     add("kspIosArm64", libs.kotlin.inject.compiler)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
     add("kspAndroid", libs.kotlin.inject.compiler)

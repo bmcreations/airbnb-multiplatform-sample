@@ -1,6 +1,7 @@
 package com.airbnb.sample.screens.explore
 
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -76,7 +78,14 @@ private fun ExploreScreen(
 
         var topBarHeight by remember { mutableStateOf(0.dp) }
         var decorLabelHeight by remember { mutableStateOf(0.dp) }
-        val availableHeight by remember(maxHeight, topBarHeight) {
+        val peekHeight by remember(decorLabelHeight) {
+            derivedStateOf {
+                56.dp +  // topbar height
+                    decorLabelHeight
+            }
+        }
+
+        val sheetMaxHeight by remember(maxHeight, topBarHeight) {
             derivedStateOf { maxHeight - topBarHeight }
         }
 
@@ -97,15 +106,19 @@ private fun ExploreScreen(
             snapshotFlow { runCatching { bottomScaffoldState.bottomSheetState.requireOffset() } }
                 .map {
                     it.map { with(density) { it.toDp() } }
-                        .map { offset -> availableHeight - offset }
-                        .getOrDefault(availableHeight)
+                        .map { offset -> sheetMaxHeight - offset }
+                        .getOrDefault(sheetMaxHeight)
                 }
-                .map { it / availableHeight }
+                .map { it / sheetMaxHeight }
                 .onEach {
                     fabAlpha = it
                     offsetProvider(it)
                 }
                 .launchIn(this)
+        }
+
+        DisposableEffect(Unit) {
+            onDispose { offsetProvider(1f) }
         }
 
         Scaffold(
@@ -140,7 +153,7 @@ private fun ExploreScreen(
                 sheetContainerColor = MaterialTheme.colorScheme.background,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 sheetContentColor = MaterialTheme.colorScheme.onSurface,
-                sheetPeekHeight = 56.dp + decorLabelHeight,
+                sheetPeekHeight = peekHeight,
                 sheetContent = {
                     val showTotalSelector by remember(state.selectedHouseType, state.houseTypes) {
                         derivedStateOf {
@@ -165,13 +178,13 @@ private fun ExploreScreen(
                         modifier = Modifier.height(maxHeight - topBarHeight),
                         results = filteredResults,
                         showTotalSelector = showTotalSelector,
-                        totalPriceSelected = state.showTotal,
+                        totalPriceSelected = state.useTotal,
                         onFavoriteClick = {
                             // TODO: handle authenticated state
                             navigator.show(Screens.LoginModal)
                         },
                         totalToggle = {
-                            TotalToggle(checked = state.showTotal) {
+                            TotalToggle(checked = state.useTotal) {
                                 dispatch(
                                     ExploreViewModel.Event.OnShowTotalChanged(it)
                                 )
@@ -183,7 +196,16 @@ private fun ExploreScreen(
                     )
                 },
                 content = {
-                    MapContent(filteredResults) {
+                    MapContent(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            top = topBarHeight,
+                            bottom = peekHeight,
+                        ),
+                        useTotalPrice = state.useTotal,
+                        results = filteredResults
+                    ) {
 
                     }
                 },

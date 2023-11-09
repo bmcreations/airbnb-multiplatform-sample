@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Map
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +33,10 @@ import androidx.compose.ui.unit.dp
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.ui.components.Row
 
+/**
+ *This is a modified implementation of [ExtendedFloatingActionButton] that allows us to reorder the
+ * placement of the text and icon elements.
+ */
 @Composable
 fun MapFab(
     modifier: Modifier = Modifier,
@@ -54,10 +59,6 @@ fun MapFab(
         interactionSource = interactionSource,
     ) {
         CompositionLocalProvider(LocalContentColor provides Color.White) {
-            // Adding the text style from [ExtendedFloatingActionButton] to all FAB variations. In
-            // the majority of cases this will have no impact, because icons are expected, but if a
-            // developer decides to put some short text to emulate an icon, (like "?") then it will
-            // have the correct styling.
             ProvideTextStyle(
                 MaterialTheme.typography.labelSmall,
             ) {
@@ -85,7 +86,7 @@ fun MapFab(
                             )
                             Spacer(Modifier.width(MaterialTheme.dimens.staticGrid.x1))
                             Icon(
-                                modifier = Modifier.size(MaterialTheme.dimens.staticGrid.x4),
+                                modifier = Modifier.size(MaterialTheme.dimens.staticGrid.x5),
                                 imageVector = Icons.Rounded.Map,
                                 contentDescription = null,
                                 tint = Color.White

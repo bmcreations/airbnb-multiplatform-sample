@@ -1,0 +1,8 @@
+source 'https://cdn.cocoapods.org'
+
+target 'ios' do
+#   use_frameworks!
+  platform :ios, '14.1'
+#   pod 'shared', :path => '../shared'
+  pod 'GoogleMaps', '8.2.0'
+end

@@ -250,7 +250,6 @@ private fun CustomSwipeToDismiss(
         }
     }
 
-    logging("gesture").d { "shift=$shift" }
     Box(
         modifier = Modifier
             .offset { IntOffset(x = shift, 0) }

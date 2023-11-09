@@ -2,7 +2,11 @@ package com.airbnb.sample.domain.settings
 
 import com.airbnb.sample.data.houses.HouseType
 import com.airbnb.sample.data.houses.Stay
+import com.airbnb.sample.data.location.LatLong
+import com.airbnb.sample.networking.Unsplash
 import com.airbnb.sample.utils.to
+import com.benasher44.uuid.Uuid
+import com.benasher44.uuid.uuid4
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
@@ -19,88 +23,180 @@ class ExploreRepository {
     private val ratingRandom = Random(2)
     private val imageRandom = Random(8)
 
-    suspend fun getAvailableStays(minimal: Boolean = true, countPerType: Int = 5): Result<List<Stay>> {
+    suspend fun getAvailableStays(
+        minimal: Boolean = true,
+        countPerType: Int = 5
+    ): Result<List<Stay>> {
         if (!minimal) return Result.failure(NotImplementedError())
 
         return Result.success(HouseType.all.flatMap { type ->
             (0 until countPerType).map {
-                val location = locationGenerator(type)
+                val location = locationGenerator(it, type)
 
                 Stay.Minimal(
-                    city = location.first,
-                    province = location.second,
-                    country = location.third,
+                    id = uuid4().toString(),
+                    city = location.city,
+                    province = location.province,
+                    country = location.country,
                     rating = randomRating(ratingRandom),
                     usdPricePoint = randomPricePoint(priceRandom),
                     distanceFromUser = randomDistance(distanceRandom),
                     nextAvailabilityDates = randomDateRange(Random),
-                    imageUrls = (0..5).map { "https://source.unsplash.com/random/?house,front&${imageRandom.nextInt()}" },
+                    imageUrls = (0..5).map {
+                        when (type) {
+                            HouseType.AwesomeView -> Unsplash.randomImageUrl("house,front&${imageRandom.nextInt()}")
+                            HouseType.Cabin -> Unsplash.randomImageUrl("cabin,front&${imageRandom.nextInt()}")
+                            HouseType.Castle -> Unsplash.randomImageUrl("castle,front&${imageRandom.nextInt()}")
+                            HouseType.Houseboat -> Unsplash.randomImageUrl("boat,front&${imageRandom.nextInt()}")
+                            HouseType.Omg -> Unsplash.randomImageUrl("house,front&${imageRandom.nextInt()}")
+                        }
+                    },
                     isFavorite = false,
-                    type = type
+                    type = type,
+                    location = location.gps
                 )
             }
         })
     }
 }
 
-
-
-private typealias City = String
-private typealias Province = String
-private typealias Country = String
-private typealias StayLocation = Triple<City, Province, Country>
+private data class StayLocation(
+    val city: String,
+    val province: String,
+    val country: String,
+    val gps: LatLong,
+)
 
 // Sample data generators
-val locationGenerator: (HouseType) -> StayLocation = {
-    val options = when (it) {
+private val locationGenerator: (Int, HouseType) -> StayLocation = { index, type ->
+    val options = when (type) {
         HouseType.AwesomeView -> {
             listOf(
-                "Middlebury" to "Indiana" to "United States",
-                "Marcellus" to "Michigan" to "United States",
-                "White Pigeon" to "Michigan" to "United States",
-                "Grass Lake Charter Township" to "Michigan" to "United States",
-                "Tipton" to "Michigan" to "United States",
+                StayLocation(
+                    "Middlebury", "Indiana", "United States",
+                    LatLong(41.675289, -85.706093)
+                ),
+                StayLocation(
+                    "Marcellus", "Michigan", "United States",
+                    LatLong(42.027931, -85.817398)
+                ),
+                StayLocation(
+                    "White Pigeon", "Michigan", "United States",
+                    LatLong(41.792641, -85.865768)
+                ),
+                StayLocation(
+                    "Grass Lake Charter Township", "Michigan", "United States",
+                    LatLong(43.723970, -85.461310)
+                ),
+                StayLocation(
+                    "Tipton", "Michigan", "United States",
+                    LatLong(42.024521, -84.083183)
+                ),
             )
         }
+
         HouseType.Cabin -> {
             listOf(
-                "Coloma" to "Michigan" to "United States",
-                "Saugutuck" to "Michigan" to "United States",
-                "White Pigeon" to "Michigan" to "United States",
-                "Put-in-Bay" to "Ohio" to "United States",
-                "Hudsonville" to "Michigan" to "United States",
+                StayLocation(
+                    "Coloma", "Michigan", "United States",
+                    LatLong(42.1861494, -86.308356)
+                ),
+                StayLocation(
+                    "Saugatuck", "Michigan", "United States",
+                    LatLong(42.654930114746094, -86.20410919189453)
+                ),
+                StayLocation(
+                    "White Pigeon", "Michigan", "United States",
+                    LatLong(41.79817581176758, -85.6431884765625)
+                ),
+                StayLocation(
+                    "Put-in-Bay", "Ohio", "United States",
+                    LatLong(41.6518884, -82.8186814)
+                ),
+                StayLocation(
+                    "Hudsonsville", "Michigan", "United States",
+                    LatLong(42.86600112915039, -85.86275482177734)
+                ),
             )
         }
+
         HouseType.Castle -> {
             listOf(
-                "Ballintuim" to "United Kingdom" to "United Kingdom",
-                "Kilcolgan" to "Galway" to "Ireland",
-                "Bree" to "Wexford" to "Ireland",
-                "Cleveland" to "Wisconsin" to "United States",
-                "Portpatrick" to "Scotland" to "United Kingdom"
+                StayLocation(
+                    "Ballintuim", "United Kingdom", "United Kingdom",
+                    LatLong(56.6782693, -3.4683069)
+                ),
+                StayLocation(
+                    "Kilcogan", "Galway", "Ireland",
+                    LatLong(53.208245, -8.8789732)
+                ),
+                StayLocation(
+                    "Bree", "Wexford", "Ireland",
+                    LatLong(52.4406886, -6.6227326),
+                ),
+                StayLocation(
+                    "Cleveland", "Wisconsin", "United States",
+                    LatLong(43.9140625, -87.75079345703125)
+                ),
+                StayLocation(
+                    "Portpatrick", "Scotland", "United Kingdom",
+                    LatLong(54.8418486, -5.1168367)
+                ),
             )
         }
+
         HouseType.Houseboat -> {
             listOf(
-                "Melrose" to "Ney York" to "United States",
-                "Swansboro" to "North Carolina" to "United States",
-                "Oakwood" to "Georgia" to "United States",
-                "Sanford" to "Florida" to "United States",
-                "Mallorytown" to "Ontario" to "Canada"
+                StayLocation(
+                    "Melrose", "New York", "United States",
+                    LatLong(40.8256703, -73.9152416)
+                ),
+                StayLocation(
+                    "Swansboro", "North Carolina", "United States",
+                    LatLong(34.68995666503906, -77.12251281738281)
+                ),
+                StayLocation(
+                    "Oakwood", "Georgia", "United States",
+                    LatLong(34.227602,-83.8843455)
+                ),
+                StayLocation(
+                    "Sanford", "Florida", "United States",
+                    LatLong(28.8117345,-81.2680223)
+                ),
+                StayLocation(
+                    "Mallorytown", "Ontario", "Canada",
+                    LatLong(44.479209899902344,-75.884765625)
+                ),
             )
         }
+
         HouseType.Omg -> {
             listOf(
-                "Stege" to "Denmark" to "Denmark",
-                "Drimnin" to "Scotland" to "United Kingdom",
-                "Pelkosenniemi" to "Finland" to "Finland",
-                "Lac-Beauport" to "Quebec" to "Canada",
-                "Austin" to "Texas" to "United States"
+                StayLocation(
+                    "Stege", "Denmark", "Denmark",
+                    LatLong(54.9863794,12.2861344)
+                ),
+                StayLocation(
+                    "Drimnin", "Scotland", "United Kingdom",
+                    LatLong(56.61523,-5.983825)
+                ),
+                StayLocation(
+                    "Pelkosenniemi", "Finland", "Finland",
+                    LatLong(67.10891723632812,27.515344619750977)
+                ),
+                StayLocation(
+                    "Lac-Beauport", "Quebec", "Canada",
+                    LatLong(46.94734191894531,-71.29499816894531)
+                ),
+                StayLocation(
+                    "Austin", "Texas", "United States",
+                    LatLong(30.2711286,-97.7436995)
+                ),
             )
         }
     }
 
-    options.random()
+    options[index]
 }
 
 private val randomPricePoint: (Random) -> Double = {
@@ -108,7 +204,7 @@ private val randomPricePoint: (Random) -> Double = {
 }
 
 private val randomRating: (Random) -> Double = {
-    it.nextDouble(0.0, 5.0)
+    it.nextDouble(1.3, 5.0)
 }
 
 private val randomDistance: (Random) -> Int = {

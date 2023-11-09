@@ -7,6 +7,7 @@ agp = "8.3.0-alpha11"
 kotlin = "1.9.10"
 compose-plugin = "1.5.10"
 compose-compiler = "1.5.3"
+mapsCompose = "4.1.1"
 voyager = "1.0.0-rc07"
 kotlinInject = "0.6.1"
 settings = "1.1.0"
@@ -17,6 +18,11 @@ androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version = "1.8.0" }
 androidx-core = { module = "androidx.core:core-ktx", version = "1.12.0" }
 androidx-datastore = { module = "androidx.datastore:datastore-preferences", version = "1.0.0" }
+
+google-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+google-maps-compose-utils = { module = "com.google.maps.android:maps-compose-utils", version.ref = "mapsCompose" }
+google-play-maps = { module = "com.google.android.gms:play-services-maps", version = "18.2.0" }
+google-play-location = { module = "com.google.android.gms:play-services-location", version = "21.0.1" }
 
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.4.1" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.0" }
@@ -38,6 +44,8 @@ voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", vers
 voyager-navigator-tabs = { module = "cafe.adriel.voyager:voyager-tab-navigator", version.ref = "voyager" }
 
 webview = { module = "io.github.kevinnzou:compose-webview-multiplatform", version = "1.6.0" }
+
+uuid = { module = "com.benasher44:uuid", version = "0.8.1" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

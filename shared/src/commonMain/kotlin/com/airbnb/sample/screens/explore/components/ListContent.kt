@@ -1,9 +1,13 @@
 package com.airbnb.sample.screens.explore.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,12 +21,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.rounded.Favorite
@@ -37,6 +44,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.SpanStyle
@@ -44,15 +54,19 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.airbnb.sample.data.houses.Stay
 import com.airbnb.sample.screens.main.LocalBottomPadding
 import com.airbnb.sample.theme.dimens
+import com.airbnb.sample.ui.components.PagerIndicator
 import com.airbnb.sample.ui.components.Row
 import com.airbnb.sample.ui.components.ToggleSwitch
 import com.airbnb.sample.utils.formatAsMoney
 import com.airbnb.sample.utils.round
+import com.airbnb.sample.utils.ui.plus
 import com.seiko.imageloader.rememberImagePainter
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 @Composable
@@ -66,8 +80,10 @@ internal fun ListContent(
     onFavoriteClick: () -> Unit,
 ) {
     LazyColumn(
-        modifier = modifier.padding(bottom = LocalBottomPadding.current),
-        contentPadding = PaddingValues(MaterialTheme.dimens.inset),
+        modifier = modifier,
+        contentPadding = PaddingValues(MaterialTheme.dimens.inset)
+            // account for tab bar bottom padding
+            .plus(PaddingValues(bottom = LocalBottomPadding.current)),
         verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.inset)
     ) {
         item {
@@ -183,6 +199,14 @@ private fun Imagery(images: List<String>) {
                 contentDescription = null
             )
         }
+
+        PagerIndicator(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = MaterialTheme.dimens.staticGrid.x2),
+            pagerState = pagerState,
+            indicatorSize = MaterialTheme.dimens.staticGrid.x2,
+        )
     }
 }
 
@@ -192,7 +216,7 @@ private fun Metadata(listing: Stay.Minimal, useTotalPrice: Boolean) {
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.Top
     ) {
-        Column(modifier = Modifier.alignByBaseline(),) {
+        Column(modifier = Modifier.alignByBaseline()) {
             Text(
                 text = listing.displayLocation("United States"),
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.W600)
@@ -232,29 +256,19 @@ private fun Metadata(listing: Stay.Minimal, useTotalPrice: Boolean) {
                     }
                 }
             }
+
             Text(
                 text = priceDisplay,
                 style = MaterialTheme.typography.labelSmall,
                 textDecoration = TextDecoration.Underline,
             )
         }
-        Row(
+        RatingWithStarLabel(
             modifier = Modifier
                 .weight(1f)
                 .alignByBaseline(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.staticGrid.x1, Alignment.End)
-        ) {
-            Icon(
-                modifier = Modifier.size(12.dp),
-                imageVector = Icons.Rounded.Star,
-                contentDescription = null
-            )
-            Text(
-                text = listing.rating.round(2).toString(),
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
+            rating = listing.rating.round(2).toString(),
+        )
     }
 }
 

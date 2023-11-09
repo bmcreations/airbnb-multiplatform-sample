@@ -31,7 +31,7 @@ class ExploreViewModel @Inject constructor(
         val currency: Currency,
         val houseTypes: List<HouseType>,
         val selectedHouseType: HouseType?,
-        val showTotal: Boolean,
+        val useTotal: Boolean,
         val results: List<Stay.Minimal>
     ) {
         companion object {
@@ -39,7 +39,7 @@ class ExploreViewModel @Inject constructor(
                 currency = Currency.United_States_dollar,
                 houseTypes = emptyList(),
                 selectedHouseType = null,
-                showTotal = true,
+                useTotal = true,
                 results = emptyList()
             )
         }
@@ -102,7 +102,7 @@ class ExploreViewModel @Inject constructor(
                     state.copy(results = event.results)
                 }
                 is Event.OnShowTotalChanged -> { state ->
-                    state.copy(showTotal = event.enabled)
+                    state.copy(useTotal = event.enabled)
                 }
             }
         }
