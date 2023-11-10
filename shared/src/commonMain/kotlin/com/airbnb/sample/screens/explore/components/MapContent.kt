@@ -49,7 +49,7 @@ internal fun MapContent(
             locationProvider.getLatestLocation()?.let { LatLong(it.latitude, it.longitude) }
     }
 
-    val transitionState = rememberSaveable {
+    val transitionState = remember {
         MutableTransitionState(false)
     }
     var displayListingId by rememberSaveable { mutableStateOf<String?>(null) }

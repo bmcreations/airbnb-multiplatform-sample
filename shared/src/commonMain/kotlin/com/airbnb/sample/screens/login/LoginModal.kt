@@ -35,7 +35,7 @@ import com.airbnb.sample.viewmodel.screenViewModel
 @Composable
 internal fun Screens.LoginModal.RenderLogin() {
     Modal(
-        title = key,
+        title = name,
     ) {
         Screens.LoginModal.Content(
             modifier = Modifier,

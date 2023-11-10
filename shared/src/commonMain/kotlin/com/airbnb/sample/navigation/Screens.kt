@@ -22,6 +22,10 @@ sealed interface Screens : ScreenProvider {
         val webUrl: String
     }
 
+    sealed interface NamedScreen : Screen {
+        val name: String
+    }
+
     data object Main : Screen {
         override val key = uniqueScreenKey
 
@@ -60,14 +64,16 @@ sealed interface Screens : ScreenProvider {
             @Composable
             override fun Content() = RenderProfile()
 
-            data object Accessibility: Screen {
-                override val key = "Accessibility"
+            data object Accessibility: NamedScreen {
+                override val name = "Accessibility"
+                override val key = uniqueScreenKey
                 @Composable
                 override fun Content() = RenderAccessibility()
             }
 
-            data object HelpCenter: Screen, Web {
-                override val key = "Help Center"
+            data object HelpCenter: NamedScreen, Web {
+                override val name = "Help Center"
+                override val key = uniqueScreenKey
 
                 override val webUrl: String
                     get() = "https://www.airbnb.com/help/?audience=guest"
@@ -78,28 +84,32 @@ sealed interface Screens : ScreenProvider {
     }
 
 
-    data object Settings: Screen {
-        override val key = "Settings"
+    data object Settings: NamedScreen {
+        override val name = "Settings"
+        override val key = uniqueScreenKey
+
         @Composable
         override fun Content() = RenderSettings()
 
-        data object CurrencySelection: Screen {
-            override val key = "Choose a currency"
+        data object CurrencySelection: NamedScreen {
+            override val name = "Choose a currency"
+            override val key = uniqueScreenKey
             @Composable
             override fun Content() = RenderCurrencySelection()
         }
 
-        data object Terms: Screen, Web {
-            override val key = "Terms of Service"
-
+        data object Terms: NamedScreen, Web {
+            override val name = "Terms of Service"
+            override val key = uniqueScreenKey
             override val webUrl: String
                 get() = "https://www.airbnb.com/help/article/2908"
             @Composable
             override fun Content() = WebScreen(this)
         }
 
-        data object PrivacyPolicy: Screen, Web {
-            override val key = "Privacy Policy"
+        data object PrivacyPolicy: NamedScreen, Web {
+            override val name = "Privacy Policy"
+            override val key = uniqueScreenKey
 
             override val webUrl: String
                 get() = "https://www.airbnb.com/help/article/2855"
@@ -107,8 +117,9 @@ sealed interface Screens : ScreenProvider {
             override fun Content() = WebScreen(this)
         }
 
-        data object PrivacyChoices: Screen, Web {
-            override val key = "Your Privacy Choices"
+        data object PrivacyChoices: NamedScreen, Web {
+            override val name = "Your Privacy Choices"
+            override val key = uniqueScreenKey
 
             override val webUrl: String
                 get() = "https://www.airbnb.com/help/sale-share-opt-out"
@@ -117,8 +128,10 @@ sealed interface Screens : ScreenProvider {
         }
     }
 
-    data object LoginModal : Screen {
-        override val key = "Log in or sign up"
+    data object LoginModal : NamedScreen {
+        override val name = "Log in or sign up"
+        override val key = uniqueScreenKey
+
         @Composable
         override fun Content() = RenderLogin()
     }

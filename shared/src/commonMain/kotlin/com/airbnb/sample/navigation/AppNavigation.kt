@@ -89,9 +89,11 @@ private fun SharedAppScaffolding(
     navigator: Navigator,
     content: @Composable () -> Unit
 ) {
-    val showTopBar by remember(navigator.lastItem) {
-        derivedStateOf { navigator.lastItem != Screens.Main }
+    val lastScreen = remember(navigator.lastItem) { navigator.lastItem }
+    val showTopBar by remember(lastScreen) {
+        derivedStateOf { lastScreen != Screens.Main }
     }
+
     Scaffold(
         topBar = {
             AnimatedVisibility(
@@ -102,9 +104,11 @@ private fun SharedAppScaffolding(
                 TopAppBar(
                     navigationIcon = { BackArrow(onClick = { navigator.pop() } ) },
                     title = {
-                        Text(
-                            text = navigator.lastItem.key,
-                        )
+                        if (lastScreen is Screens.NamedScreen) {
+                            Text(
+                                text = lastScreen.name,
+                            )
+                        }
                     }
                 )
             }
