@@ -109,7 +109,7 @@ private fun ExploreScreen(
                         .map { offset -> sheetMaxHeight - offset }
                         .getOrDefault(sheetMaxHeight)
                 }
-                .map { it / sheetMaxHeight }
+                .map { (it / (sheetMaxHeight * 0.90f)).coerceIn(0f, 1f) }
                 .onEach {
                     fabAlpha = it
                     offsetProvider(it)
@@ -204,6 +204,7 @@ private fun ExploreScreen(
                             bottom = peekHeight,
                         ),
                         useTotalPrice = state.useTotal,
+                        mapSettings = state.mapSettings,
                         results = filteredResults
                     ) {
 

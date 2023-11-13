@@ -13,6 +13,8 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.suspendCancellableCoroutine
 import me.tatarka.inject.annotations.Inject
 import org.lighthousegames.logging.logging
 import java.util.concurrent.atomic.AtomicReference
@@ -24,7 +26,7 @@ import kotlin.coroutines.suspendCoroutine
 @Inject
 class AndroidLocationProvider(
     private val context: Context
-): LocationProvider  {
+) : LocationProvider {
 
     // Define an atomic reference to store the latest location
     private val latestLocation = AtomicReference<Location?>(null)
@@ -43,7 +45,18 @@ class AndroidLocationProvider(
             location?.let {
                 continuation.resume(Location(it.latitude, it.longitude))
             } ?: run {
-                continuation.resumeWithException(Exception("Unable to get current location"))
+                locationCallbackHandler(
+                    errorCallback = {
+                        continuation.resumeWithException(Exception("Unable to get current location - $it"))
+                    },
+                    locationCallback = {
+                        if (it == null) {
+                            continuation.resumeWithException(Throwable("No location returned"))
+                            return@locationCallbackHandler
+                        }
+                        continuation.resume(it)
+                    }
+                )
             }
         }.addOnFailureListener { e ->
             continuation.resumeWithException(e)
@@ -51,8 +64,7 @@ class AndroidLocationProvider(
     }
 
     @SuppressLint("MissingPermission") // suppress missing permission check warning, we are checking permissions in the method.
-//    actual suspend fun currentLocation(callback: (Location?) -> Flow<Location>) {
-    override suspend fun currentLocation(
+    private fun locationCallbackHandler(
         errorCallback: (String) -> Unit,
         locationCallback: (Location?) -> Unit
     ) {
@@ -62,16 +74,16 @@ class AndroidLocationProvider(
         val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
 
-        if(!isGpsEnabled) {
+        if (!isGpsEnabled) {
             errorCallback("GPS is disabled")
         }
-        if(!isNetworkEnabled) {
+        if (!isNetworkEnabled) {
             errorCallback("Network is disabled")
         }
 
         val locationRequest = LocationRequest.Builder(1000)
             .setIntervalMillis(1000)
-            .setPriority(Priority.PRIORITY_LOW_POWER)
+            .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY)
             .setMinUpdateDistanceMeters(1.0f)
             .setWaitForAccurateLocation(false)
             .build()
@@ -101,6 +113,13 @@ class AndroidLocationProvider(
             internalLocationCallback,
             Looper.getMainLooper()
         )
+    }
+
+    override suspend fun currentLocation(
+        errorCallback: (String) -> Unit,
+        locationCallback: (Location?) -> Unit
+    ) {
+        locationCallbackHandler(errorCallback, locationCallback)
     }
 
     private fun checkLocationPermissions(): Boolean {

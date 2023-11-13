@@ -8,8 +8,18 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.ArrowDropUp
+import androidx.compose.material.icons.rounded.ArrowLeft
+import androidx.compose.material.icons.rounded.ArrowRight
+import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.rounded.Navigation
+import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.material.icons.rounded.ZoomInMap
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.airbnb.sample.data.houses.Stay
 import com.airbnb.sample.data.location.LatLong
+import com.airbnb.sample.data.maps.MapSettings
 import com.airbnb.sample.inject.LocalAppComponent
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.ui.components.MapView
@@ -37,6 +47,7 @@ import kotlinx.coroutines.launch
 internal fun MapContent(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(),
+    mapSettings: MapSettings,
     results: List<Stay.Minimal>,
     useTotalPrice: Boolean,
     viewListing: (Stay.Minimal) -> Unit
@@ -63,14 +74,24 @@ internal fun MapContent(
     Box(modifier = modifier) {
         MapView(
             modifier = Modifier.matchParentSize(),
+            contentPadding = contentPadding,
+            mapSettings = mapSettings,
             userLocation = userLocation,
             resultLocations = results,
             useTotalPrice = useTotalPrice,
             onMarkerSelectionChange = { id -> displayListingId = id },
+            onUpdateUserLocation = {
+                scope.launch {
+                    userLocation = locationProvider.getCurrentLocation()
+                        .let { LatLong(it.latitude, it.longitude) }
+                }
+            },
             onMapMoved = {
 
             }
         )
+
+        // listing decor
         Box(
             modifier = Modifier
                 .matchParentSize()
@@ -92,37 +113,7 @@ internal fun MapContent(
                     listing?.let { viewListing(it) }
                 }
             }
-
-            LocationFinder(
-                modifier = Modifier.align(Alignment.TopEnd)
-                    .padding(MaterialTheme.dimens.inset)
-            ) {
-                scope.launch {
-                    userLocation = locationProvider.getCurrentLocation()
-                        .let { LatLong(it.latitude, it.longitude) }
-                }
-            }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun LocationFinder(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-) {
-    Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
-        shape = MaterialTheme.shapes.medium,
-        onClick = onClick
-    ) {
-        Icon(
-            modifier = Modifier.padding(MaterialTheme.dimens.staticGrid.x2),
-            imageVector = Icons.Rounded.Navigation,
-            contentDescription = "Locate user"
-        )
     }
 }
 

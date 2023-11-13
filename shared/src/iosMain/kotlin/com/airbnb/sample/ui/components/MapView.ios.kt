@@ -1,26 +1,36 @@
 package com.airbnb.sample.ui.components
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
 import cocoapods.GoogleMaps.GMSCameraUpdate
+import cocoapods.GoogleMaps.GMSCameraUpdate.Companion.scrollByX
+import cocoapods.GoogleMaps.GMSCameraUpdate.Companion.zoomIn
+import cocoapods.GoogleMaps.GMSCameraUpdate.Companion.zoomOut
 import cocoapods.GoogleMaps.GMSCoordinateBounds
 import cocoapods.GoogleMaps.GMSMapView
 import cocoapods.GoogleMaps.GMSMapViewDelegateProtocol
 import cocoapods.GoogleMaps.GMSMarker
 import cocoapods.GoogleMaps.animateWithCameraUpdate
+import cocoapods.GoogleMaps.kGMSMaxZoomLevel
+import cocoapods.GoogleMaps.kGMSMinZoomLevel
 import cocoapods.GoogleMaps.kGMSTypeNormal
 import com.airbnb.sample.data.houses.Stay
 import com.airbnb.sample.data.location.LatLong
 import com.airbnb.sample.data.maps.CameraPositionBounds
+import com.airbnb.sample.data.maps.MapSettings
 import com.airbnb.sample.utils.formatAsMoney
 import com.airbnb.sample.utils.uikit.UIPaddingLabel
 import com.airbnb.sample.utils.uikit.addDropShadow
@@ -44,10 +54,13 @@ import kotlin.math.roundToInt
 @Composable
 actual fun MapView(
     modifier: Modifier,
+    contentPadding: PaddingValues,
+    mapSettings: MapSettings,
     userLocation: LatLong?,
     resultLocations: List<Stay.Minimal>,
     useTotalPrice: Boolean,
     onMarkerSelectionChange: (String?) -> Unit,
+    onUpdateUserLocation: () -> Unit,
     onMapMoved: () -> Unit,
 ) {
 
@@ -77,9 +90,7 @@ actual fun MapView(
 
     var isMapSetupCompleted by remember { mutableStateOf(false) }
 
-    var gsmMapViewType by remember { mutableStateOf(kGMSTypeNormal) }
     var didMapTypeChange by remember { mutableStateOf(false) }
-
     var didCameraPositionLatLongBoundsChange by remember { mutableStateOf(false) }
     var didCameraPositionChange by remember { mutableStateOf(false) }
     var didCameraLocationLatLongChange by remember { mutableStateOf(false) }
@@ -118,6 +129,7 @@ actual fun MapView(
         }
     }
 
+    val scope = rememberCoroutineScope()
 
     // Note: `GoogleMaps` using UIKit is a bit of a hack, it's not a real Composable, so we have to
     //       trigger independent updates of the map parts, and sometimes re-render the
@@ -141,16 +153,12 @@ actual fun MapView(
                     view.settings.setZoomGestures(true)
                     view.settings.setCompassButton(false)
 
+                    view.mapType = kGMSTypeNormal
 
                     view.myLocationEnabled = true // show the users dot
                     view.settings.myLocationButton = false // we use our own location circle
 
                     isMapSetupCompleted = true
-                }
-
-                if (didMapTypeChange) {
-                    didMapTypeChange = false
-                    view.mapType = gsmMapViewType
                 }
 
                 if (didCameraLocationLatLongChange) {
@@ -189,7 +197,6 @@ actual fun MapView(
                     }
                 }
 
-                logging("map").d { "redraw=$isMapRedrawTriggered" }
                 if (isMapRedrawTriggered) {
                     // reset the markers & polylines, selected marker, etc.
                     val oldSelectedMarker = view.selectedMarker
@@ -206,7 +213,7 @@ actual fun MapView(
                             userData = result.id
                             icon = pricedMarker(
                                 price = if (useTotalPrice) "${result.totalPriceOfStay()}"
-                                        else "${result.usdPricePoint.roundToInt()}",
+                                else "${result.usdPricePoint.roundToInt()}",
                                 isSelected = curSelectedMarkerId == result.id,
                                 wasPreviouslySelected = previousSelectedMarkers.contains(result.id)
                             )
@@ -227,6 +234,65 @@ actual fun MapView(
                 }
             },
         )
+
+        MapA11yControls(
+            modifier = Modifier
+                .padding(top = contentPadding.calculateTopPadding())
+                .align(Alignment.TopEnd),
+            mapSettings = mapSettings,
+            canZoomOut = {
+                logging("maps").d { "zoom=${googleMapView.camera.zoom}, minZoom = $kGMSMinZoomLevel" }
+                googleMapView.camera.zoom > kGMSMinZoomLevel
+            },
+            canZoomIn = {
+                logging("maps").d { "zoom=${googleMapView.camera.zoom}, maxZoom = $kGMSMaxZoomLevel" }
+                googleMapView.camera.zoom < kGMSMaxZoomLevel
+            },
+            canMove = { direction -> true }
+        ) {
+            when (it) {
+                MapControlEvent.Locate -> {
+                    onUpdateUserLocation()
+                }
+
+                is MapControlEvent.Pan -> {
+                    when (it.direction) {
+                        MapControlEvent.MovementDirection.Left -> googleMapView.moveCamera(
+                            scrollByX(
+                                -50.0,
+                                0.0
+                            )
+                        )
+
+                        MapControlEvent.MovementDirection.Up -> googleMapView.moveCamera(
+                            scrollByX(
+                                0.0,
+                                -50.0
+                            )
+                        )
+
+                        MapControlEvent.MovementDirection.Right -> googleMapView.moveCamera(
+                            scrollByX(50.0, 0.0)
+                        )
+
+                        MapControlEvent.MovementDirection.Down -> googleMapView.moveCamera(
+                            scrollByX(
+                                00.0,
+                                50.0
+                            )
+                        )
+                    }
+                }
+
+                MapControlEvent.ZoomIn -> {
+                    googleMapView.moveCamera(zoomIn())
+                }
+
+                MapControlEvent.ZoomOut -> {
+                    googleMapView.moveCamera(zoomOut())
+                }
+            }
+        }
     }
 }
 

@@ -2,6 +2,7 @@ package com.airbnb.sample.screens.explore
 
 import com.airbnb.sample.data.houses.HouseType
 import com.airbnb.sample.data.houses.Stay
+import com.airbnb.sample.data.maps.MapSettings
 import com.airbnb.sample.data.settings.Currency
 import com.airbnb.sample.domain.settings.ExploreRepository
 import com.airbnb.sample.domain.settings.SettingsRepository
@@ -23,8 +24,8 @@ class ExploreViewModel @Inject constructor(
     dispatchers: DispatcherProvider,
     settings: SettingsRepository,
     explorer: ExploreRepository,
-): BaseViewModel<ExploreViewModel.State, ExploreViewModel.Event>(
-   initialState = State.Empty,
+) : BaseViewModel<ExploreViewModel.State, ExploreViewModel.Event>(
+    initialState = State.Empty,
     updateStateForEvent = updateStateForEvent
 ) {
     data class State(
@@ -32,7 +33,8 @@ class ExploreViewModel @Inject constructor(
         val houseTypes: List<HouseType>,
         val selectedHouseType: HouseType?,
         val useTotal: Boolean,
-        val results: List<Stay.Minimal>
+        val results: List<Stay.Minimal>,
+        val mapSettings: MapSettings,
     ) {
         companion object {
             val Empty = State(
@@ -40,17 +42,25 @@ class ExploreViewModel @Inject constructor(
                 houseTypes = emptyList(),
                 selectedHouseType = null,
                 useTotal = true,
-                results = emptyList()
+                results = emptyList(),
+                mapSettings = MapSettings(false, false)
             )
         }
     }
 
     sealed interface Event {
-        data class OnCurrencySet(val currency: Currency): Event
-        data class OnHouseTypesLoaded(val types: List<HouseType>): Event
-        data class OnHouseTypeSelected(val type: HouseType): Event
-        data class OnShowTotalChanged(val enabled: Boolean): Event
-        data class OnResultsLoaded(val results: List<Stay.Minimal>): Event
+        data class OnCurrencySet(val currency: Currency) : Event
+        data class OnHouseTypesLoaded(val types: List<HouseType>) : Event
+        data class OnHouseTypeSelected(val type: HouseType) : Event
+        data class OnShowTotalChanged(val enabled: Boolean) : Event
+        data class OnResultsLoaded(val results: List<Stay.Minimal>) : Event
+        data class OnMapZoomControlChanged(
+            val enabled: Boolean,
+        ) : Event
+
+        data class OnMapPanControlChanged(
+            val enabled: Boolean,
+        ) : Event
     }
 
     init {
@@ -61,6 +71,19 @@ class ExploreViewModel @Inject constructor(
             .onEach { dispatchEvent(dispatchers.Main, Event.OnCurrencySet(it)) }
             .launchIn(viewModelScope.coroutineScope)
 
+        settings.mapPanControls
+            .observe()
+            .flowOn(dispatchers.IO)
+            .onEach {
+                dispatchEvent(dispatchers.Main, Event.OnMapPanControlChanged(it))
+            }.launchIn(viewModelScope.coroutineScope)
+
+        settings.mapZoomControls
+            .observe()
+            .flowOn(dispatchers.IO)
+            .onEach {
+                dispatchEvent(dispatchers.Main, Event.OnMapZoomControlChanged(it))
+            }.launchIn(viewModelScope.coroutineScope)
 
         viewModelScope.launch {
             flowOf(explorer.getAvailableStays())
@@ -73,7 +96,7 @@ class ExploreViewModel @Inject constructor(
                     dispatchEvent(
                         dispatchers.Main,
                         Event.OnHouseTypesLoaded(types),
-                      )
+                    )
 
                     dispatchEvent(
                         dispatchers.Main,
@@ -89,20 +112,35 @@ class ExploreViewModel @Inject constructor(
                 is Event.OnCurrencySet -> { state ->
                     state.copy(currency = event.currency)
                 }
+
                 is Event.OnHouseTypesLoaded -> { state ->
                     state.copy(
                         houseTypes = event.types,
                         selectedHouseType = event.types.firstOrNull()
                     )
                 }
+
                 is Event.OnHouseTypeSelected -> { state ->
                     state.copy(selectedHouseType = event.type)
                 }
+
                 is Event.OnResultsLoaded -> { state ->
                     state.copy(results = event.results)
                 }
+
                 is Event.OnShowTotalChanged -> { state ->
                     state.copy(useTotal = event.enabled)
+                }
+
+                is Event.OnMapZoomControlChanged -> { state ->
+                    state.copy(
+                        mapSettings = state.mapSettings.copy(zoomControls = event.enabled)
+                    )
+                }
+                is Event.OnMapPanControlChanged -> { state ->
+                    state.copy(
+                        mapSettings = state.mapSettings.copy(panControls = event.enabled)
+                    )
                 }
             }
         }

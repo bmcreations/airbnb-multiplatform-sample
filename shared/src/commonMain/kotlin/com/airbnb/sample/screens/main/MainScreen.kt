@@ -1,5 +1,7 @@
 package com.airbnb.sample.screens.main
 
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +37,7 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
@@ -98,16 +101,17 @@ private fun TabBar(tabs: List<Tab>, offsetProvider: () -> Float) {
     var height by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
 
+    val elevation by animateDpAsState(
+        offsetProvider() * MaterialTheme.dimens.staticGrid.x2
+    )
+
     BottomNavigation(
         modifier = Modifier
             .onPlaced { with (density) { height = it.size.height.toDp() } }
-            .graphicsLayer {
-                logging("tab").d { "offset=${offsetProvider()}" }
-            translationY = height.toPx() * (1 - offsetProvider())
-        },
+            .graphicsLayer { translationY = height.toPx() * (1 - offsetProvider()) },
         backgroundColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
-        elevation = MaterialTheme.dimens.staticGrid.x2,
+        elevation = elevation,
     ) {
         tabs.forEach { tab ->
             TabNavigationItem(tab)
