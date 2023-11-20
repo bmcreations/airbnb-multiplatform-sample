@@ -1,4 +1,4 @@
-package com.airbnb.sample.screens.explore.components
+package com.airbnb.sample.screens.explore.experience.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.size

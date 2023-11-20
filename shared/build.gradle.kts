@@ -36,6 +36,7 @@ kotlin {
         // Must define the pods that are in the Podfile (unknown why?)
         pod("GoogleMaps") {
             version = "8.2.0"
+            extraOpts += listOf("-compiler-option", "-fmodules")
         }
     }
 
@@ -61,6 +62,7 @@ kotlin {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.imageloader)
                 implementation(libs.logging)
+                implementation(libs.orbital)
                 implementation(libs.settings)
                 implementation(libs.settings.coroutines)
                 implementation(libs.webview)
@@ -95,7 +97,10 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
+
     compileOptions {
+        // Enable support for the new language APIs
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -126,4 +131,5 @@ dependencies {
     add("kspIosArm64", libs.kotlin.inject.compiler)
     add("kspIosSimulatorArm64", libs.kotlin.inject.compiler)
     add("kspAndroid", libs.kotlin.inject.compiler)
+    add("coreLibraryDesugaring", "com.android.tools:desugar_jdk_libs:2.0.4")
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.text.withStyle
 import com.airbnb.sample.data.location.LatLong
 import com.airbnb.sample.utils.format
 import com.airbnb.sample.utils.formatAsMoney
+import com.airbnb.sample.utils.printed
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.daysUntil
@@ -41,8 +42,7 @@ sealed interface Stay {
     fun stayLength(timezone: TimeZone = TimeZone.currentSystemDefault()) =
         nextAvailabilityDates.start.daysUntil(nextAvailabilityDates.endInclusive.minus(1.days), timezone)
 
-    fun printedDuration() =
-        "${nextAvailabilityDates.start.format("MMM dd")} - ${nextAvailabilityDates.endInclusive.format("MMM dd")}"
+    fun printedDuration() = nextAvailabilityDates.printed()
 
     fun totalPriceOfStay() = (stayLength() * usdPricePoint).roundToInt()
 

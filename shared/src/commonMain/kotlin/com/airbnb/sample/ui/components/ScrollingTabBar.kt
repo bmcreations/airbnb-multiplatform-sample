@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import com.airbnb.sample.theme.dimens
-import com.airbnb.sample.utils.ui.debugBounds
 
 object TabScope {
     val SpacerSize: Dp
@@ -63,7 +62,7 @@ object ScrollingTabBarDefaults {
                     .background(MaterialTheme.colorScheme.onBackground)
                     .graphicsLayer {
                         this.alpha = alpha
-                    }.debugBounds()
+                    },
                 )
 
                 Column(

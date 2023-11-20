@@ -1,7 +1,6 @@
-package com.airbnb.sample.screens.explore.components
+package com.airbnb.sample.screens.explore.experience.components
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,9 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,17 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.airbnb.sample.screens.explore.ExploreViewModel
+import com.airbnb.sample.screens.explore.experience.ExploreViewModel
 import com.airbnb.sample.theme.dimens
-import com.airbnb.sample.theme.secondaryText
 import com.airbnb.sample.ui.components.Row
 import com.airbnb.sample.ui.components.ScrollingTabBar
 
@@ -46,6 +38,8 @@ import com.airbnb.sample.ui.components.ScrollingTabBar
 internal fun TopBar(
     state: ExploreViewModel.State,
     dispatch: (ExploreViewModel.Event) -> Unit,
+    searchContainer: @Composable () -> Unit,
+    onFilterClicked: () -> Unit,
     onSizeDetermined: (Dp) -> Unit,
 ) {
     val density = LocalDensity.current
@@ -66,10 +60,10 @@ internal fun TopBar(
                 horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.staticGrid.x3),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                FloatingSearchBar(
-                    modifier = Modifier.weight(1f).padding(top = 0.5.dp)
-                ) { }
-                FilterButton { }
+                Box(modifier = Modifier.weight(1f)) {
+                    searchContainer()
+                }
+                FilterButton { onFilterClicked() }
             }
             ScrollingTabBar(
                 modifier = Modifier.fillMaxWidth(),
@@ -100,49 +94,28 @@ internal fun TopBar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FloatingSearchBar(
+internal fun SearchBar(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
+    title: @Composable () -> Unit,
+    subtitle: @Composable () -> Unit = { },
 ) {
-    Card(
-        modifier = modifier,
-        shape = CircleShape,
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 10.dp
-        ),
-        border = BorderStroke(0.5.dp, Color(0xFFDCDCDC).copy(alpha = 0.72f)),
-        onClick = onClick,
+    Row(
+        modifier = modifier
+            .padding(
+                horizontal = MaterialTheme.dimens.staticGrid.x4,
+                vertical = MaterialTheme.dimens.staticGrid.x2
+            ).fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.staticGrid.x2),
     ) {
-        Row(
-            modifier = Modifier
-                .padding(
-                    horizontal = MaterialTheme.dimens.staticGrid.x4,
-                    vertical = MaterialTheme.dimens.staticGrid.x2
-                ).fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.staticGrid.x2),
+        Icon(Icons.Rounded.Search, contentDescription = null)
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.staticGrid.x1)
         ) {
-            Icon(Icons.Rounded.Search, contentDescription = null)
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.staticGrid.x1)
-            ) {
-                Text(
-                    text = "Where to?",
-                    style = MaterialTheme.typography.labelSmall
-                )
-                Text(
-                    "Anywhere • Any week • Add guests",
-                    style = MaterialTheme.typography.labelSmall
-                        .copy(
-                            color = MaterialTheme.colorScheme.secondaryText,
-                            fontWeight = FontWeight.W400,
-                            fontSize = 10.sp
-                        )
-                )
-            }
+            title()
+            subtitle()
         }
     }
 }

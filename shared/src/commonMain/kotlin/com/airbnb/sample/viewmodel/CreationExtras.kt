@@ -22,7 +22,7 @@ expect abstract class CreationExtras internal constructor() {
     /**
      * Returns an element associated with the given [key]
      */
-    public abstract operator fun <T> get(key: Key<T>): T?
+    abstract operator fun <T> get(key: Key<T>): T?
 }
 
 /**

@@ -1,10 +1,15 @@
 package com.airbnb.sample.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.runtime.Composable
 import cafe.adriel.voyager.core.registry.ScreenProvider
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.uniqueScreenKey
-import com.airbnb.sample.screens.explore.RenderExplore
+import com.airbnb.sample.screens.RenderExplore
 import com.airbnb.sample.screens.inbox.RenderInbox
 import com.airbnb.sample.screens.login.RenderLogin
 import com.airbnb.sample.screens.main.RenderMain
@@ -41,42 +46,48 @@ sealed interface Screens : ScreenProvider {
             override fun Content() = RenderExplore()
         }
 
-        data object Wishlists: Screen {
+        data object Wishlists : Screen {
             override val key = uniqueScreenKey
+
             @Composable
             override fun Content() = RenderWishlists()
         }
 
-        data object Trips: Screen {
+        data object Trips : Screen {
             override val key = uniqueScreenKey
+
             @Composable
             override fun Content() = RenderTrips()
         }
 
-        data object Inbox: Screen {
+        data object Inbox : Screen {
             override val key = uniqueScreenKey
+
             @Composable
             override fun Content() = RenderInbox()
         }
 
-        data object Profile: Screen {
+        data object Profile : Screen {
             override val key = uniqueScreenKey
+
             @Composable
             override fun Content() = RenderProfile()
 
-            data object Accessibility: NamedScreen {
+            data object Accessibility : NamedScreen {
                 override val name = "Accessibility"
                 override val key = uniqueScreenKey
+
                 @Composable
                 override fun Content() = RenderAccessibility()
             }
 
-            data object HelpCenter: NamedScreen, Web {
+            data object HelpCenter : NamedScreen, Web {
                 override val name = "Help Center"
                 override val key = uniqueScreenKey
 
                 override val webUrl: String
                     get() = "https://www.airbnb.com/help/?audience=guest"
+
                 @Composable
                 override fun Content() = WebScreen(this)
             }
@@ -84,45 +95,49 @@ sealed interface Screens : ScreenProvider {
     }
 
 
-    data object Settings: NamedScreen {
+    data object Settings : NamedScreen {
         override val name = "Settings"
         override val key = uniqueScreenKey
 
         @Composable
         override fun Content() = RenderSettings()
 
-        data object CurrencySelection: NamedScreen {
+        data object CurrencySelection : NamedScreen {
             override val name = "Choose a currency"
             override val key = uniqueScreenKey
+
             @Composable
             override fun Content() = RenderCurrencySelection()
         }
 
-        data object Terms: NamedScreen, Web {
+        data object Terms : NamedScreen, Web {
             override val name = "Terms of Service"
             override val key = uniqueScreenKey
             override val webUrl: String
                 get() = "https://www.airbnb.com/help/article/2908"
+
             @Composable
             override fun Content() = WebScreen(this)
         }
 
-        data object PrivacyPolicy: NamedScreen, Web {
+        data object PrivacyPolicy : NamedScreen, Web {
             override val name = "Privacy Policy"
             override val key = uniqueScreenKey
 
             override val webUrl: String
                 get() = "https://www.airbnb.com/help/article/2855"
+
             @Composable
             override fun Content() = WebScreen(this)
         }
 
-        data object PrivacyChoices: NamedScreen, Web {
+        data object PrivacyChoices : NamedScreen, Web {
             override val name = "Your Privacy Choices"
             override val key = uniqueScreenKey
 
             override val webUrl: String
                 get() = "https://www.airbnb.com/help/sale-share-opt-out"
+
             @Composable
             override fun Content() = WebScreen(this)
         }

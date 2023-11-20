@@ -1,4 +1,4 @@
-package com.airbnb.sample.screens.explore
+package com.airbnb.sample.screens.explore.experience
 
 import com.airbnb.sample.data.houses.HouseType
 import com.airbnb.sample.data.houses.Stay

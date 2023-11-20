@@ -1,16 +1,13 @@
 package com.airbnb.sample.screens.main
 
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.BottomNavigation
@@ -43,12 +40,11 @@ import cafe.adriel.voyager.navigator.tab.CurrentTab
 import cafe.adriel.voyager.navigator.tab.LocalTabNavigator
 import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
-import com.airbnb.sample.inject.ApplicationComponent
 import com.airbnb.sample.navigation.Tabs
 import com.airbnb.sample.theme.dimens
+import com.airbnb.sample.ui.components.BottomSafeArea
 import com.airbnb.sample.utils.ui.navigationBars
 import com.airbnb.sample.utils.ui.statusBars
-import org.lighthousegames.logging.logging
 
 val LocalBottomPadding: ProvidableCompositionLocal<Dp> =
     staticCompositionLocalOf { error("LocalBottomPadding not initialized") }
@@ -84,13 +80,6 @@ internal fun RenderMain() {
                         CurrentTab()
                     }
                 }
-                Spacer(
-                    modifier = Modifier
-                        .windowInsetsBottomHeight(WindowInsets.navigationBars)
-                        .zIndex(999F)
-                        .fillMaxWidth()
-                        .background(Color.Transparent)
-                )
             }
         }
     }
@@ -105,17 +94,21 @@ private fun TabBar(tabs: List<Tab>, offsetProvider: () -> Float) {
         offsetProvider() * MaterialTheme.dimens.staticGrid.x2
     )
 
-    BottomNavigation(
+    Column(
         modifier = Modifier
-            .onPlaced { with (density) { height = it.size.height.toDp() } }
+            .onPlaced { with(density) { height = it.size.height.toDp() } }
             .graphicsLayer { translationY = height.toPx() * (1 - offsetProvider()) },
-        backgroundColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.onBackground,
-        elevation = elevation,
     ) {
-        tabs.forEach { tab ->
-            TabNavigationItem(tab)
+        BottomNavigation(
+            backgroundColor = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+            elevation = elevation,
+        ) {
+            tabs.forEach { tab ->
+                TabNavigationItem(tab)
+            }
         }
+        BottomSafeArea(color = MaterialTheme.colorScheme.background)
     }
 }
 
