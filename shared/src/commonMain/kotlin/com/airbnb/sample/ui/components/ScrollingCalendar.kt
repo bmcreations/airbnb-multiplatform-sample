@@ -1,8 +1,10 @@
 package com.airbnb.sample.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,11 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
@@ -36,11 +40,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.theme.secondaryText
+import com.airbnb.sample.utils.ui.addIf
 import com.kizitonwose.calendar.compose.VerticalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.YearMonth
+import com.kizitonwose.calendar.core.atEndOfMonth
+import com.kizitonwose.calendar.core.atStartOfMonth
 import com.kizitonwose.calendar.core.dayOfWeekRangeFrom
 import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
 import com.kizitonwose.calendar.core.lastDayOfWeekFromLocale
@@ -89,6 +96,13 @@ fun VerticalScrollingCalendar(
                 )
             },
             dayContent = { day ->
+                val startOfMonth = YearMonth.of(day.date)
+                    .plusMonths(1)
+                    .atStartOfMonth()
+                val endOfMonth = YearMonth.of(day.date)
+                    .minusMonths(1)
+                    .atEndOfMonth()
+
                 // only render days in the given month (no in or out dates)
                 if (day.position == DayPosition.MonthDate) {
                     val isTodayOrFuture = day.date.toEpochDays() >= today.toEpochDays()
@@ -114,6 +128,28 @@ fun VerticalScrollingCalendar(
                         color = if (isTodayOrFuture) textColor else MaterialTheme.colorScheme.secondaryText,
                         textDecoration = if (!isTodayOrFuture) TextDecoration.LineThrough else null
                     )
+                } else {
+                    val range = if (selectedDates.count() > 1) {
+                        selectedDates.first().rangeTo(selectedDates.last())
+                    } else {
+                        null
+                    }
+
+                    if (range != null && range.contains(day.date)) {
+                        val month = YearMonth.of(day.date)
+                        if (day.date.dayOfMonth == 1 || day.date.dayOfMonth == month.lengthOfMonth()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .align(Alignment.Center)
+                                    .graphicsLayer {
+                                        compositingStrategy = CompositingStrategy.Offscreen
+                                    }
+                                    .drawCrossMonthGradient(day)
+                                    .padding(MaterialTheme.dimens.staticGrid.x3),
+                            )
+                        }
+                    }
                 }
             }
         )
@@ -153,6 +189,7 @@ private fun Modifier.drawSelectionsAndRange(
 
     val shape = MaterialTheme.shapes.medium
     val density = LocalDensity.current
+
     this.drawBehind {
         val range = if (selectedDates.count() > 1) {
             selectedDates.first().rangeTo(selectedDates.last())
@@ -180,7 +217,7 @@ private fun Modifier.drawSelectionsAndRange(
                             RoundRect(
                                 rect = Rect(
                                     offset = Offset(xMax - curveSize + 1, yMin),
-                                    size = Size(curveSize, yMax + radiusDiff),
+                                    size = Size(curveSize, yMax + radiusDiff - 10f),
                                 ),
                                 topLeft = cornerRadius,
                                 bottomLeft = cornerRadius
@@ -197,7 +234,7 @@ private fun Modifier.drawSelectionsAndRange(
                             RoundRect(
                                 rect = Rect(
                                     offset = Offset(0f, yMin),
-                                    size = Size(curveSize, yMax + radiusDiff)
+                                    size = Size(curveSize, yMax + radiusDiff - 10f)
                                 ),
                                 topRight = cornerRadius,
                                 bottomRight = cornerRadius
@@ -217,7 +254,10 @@ private fun Modifier.drawSelectionsAndRange(
                                     RoundRect(
                                         rect = Rect(
                                             offset = Offset(0f, 0f),
-                                            size = size,
+                                            size = Size(
+                                                width = size.width,
+                                                height = size.height - 10f
+                                            ),
                                         ),
                                         topLeft = cornerRadius,
                                         bottomLeft = cornerRadius
@@ -227,6 +267,7 @@ private fun Modifier.drawSelectionsAndRange(
 
                             drawPath(path, backgroundColor)
                         }
+
                         lastDayOfWeekFromLocale() -> {
                             // end of week, round end
                             val path = Path().apply {
@@ -234,7 +275,10 @@ private fun Modifier.drawSelectionsAndRange(
                                     RoundRect(
                                         rect = Rect(
                                             offset = Offset(0f, 0f),
-                                            size = size,
+                                            size = Size(
+                                                width = size.width,
+                                                height = size.height - 10f
+                                            ),
                                         ),
                                         topRight = cornerRadius,
                                         bottomRight = cornerRadius
@@ -244,8 +288,12 @@ private fun Modifier.drawSelectionsAndRange(
 
                             drawPath(path, backgroundColor)
                         }
+
                         else -> {
-                            drawRect(backgroundColor)
+                            drawRect(
+                                color = backgroundColor,
+                                size = Size(width = size.width, height = size.height - 10f),
+                            )
                         }
                     }
                 }
@@ -254,6 +302,32 @@ private fun Modifier.drawSelectionsAndRange(
 
         if (isSelected) {
             drawCircle(Color.Black)
+        }
+    }
+}
+
+private fun Modifier.drawCrossMonthGradient(day: CalendarDay) = composed {
+    this.drawWithContent {
+        if (day.position == DayPosition.OutDate) {
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color(0xFFF1F1F1),
+                        Color.Transparent,
+                    )
+                ),
+                size = Size(width = size.width, height = size.height - 10f),
+            )
+        } else if (day.position == DayPosition.InDate) {
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        Color(0xFFF1F1F1),
+                    )
+                ),
+                size = Size(width = size.width, height = size.height - 10f),
+            )
         }
     }
 }

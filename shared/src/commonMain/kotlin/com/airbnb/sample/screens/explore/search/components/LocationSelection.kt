@@ -3,6 +3,7 @@ package com.airbnb.sample.screens.explore.search.components
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,6 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.airbnb.sample.data.explore.SearchLocationOption
@@ -29,6 +34,7 @@ import com.airbnb.sample.screens.explore.experience.components.SearchBar
 import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.theme.secondaryText
 import com.airbnb.sample.utils.printed
+import com.seiko.imageloader.rememberImagePainter
 
 @Composable
 internal fun LocationSelection(
@@ -100,10 +106,28 @@ internal fun LocationSelection(
                                 modifier = Modifier
                                     .fillParentMaxWidth(0.3f)
                                     .aspectRatio(1f)
+                                    .clip(MaterialTheme.shapes.medium)
                                     .clickable { onLocationOptionSelected(choice) }
                                     .background(MaterialTheme.colorScheme.background)
                                     .border(borderWidth, borderColor, MaterialTheme.shapes.medium)
-                            )
+                            ) {
+                                val imageUrl = choice.imageUrl
+                                if (imageUrl != null) {
+                                    val painter =
+                                        rememberImagePainter(url = imageUrl)
+                                    Image(
+                                        modifier = Modifier.matchParentSize(),
+                                        painter = painter,
+                                        contentDescription = null,
+                                        contentScale = ContentScale.FillBounds,
+                                        colorFilter = ColorFilter.colorMatrix(
+                                            ColorMatrix().apply {
+                                                setToSaturation(0f)
+                                            }
+                                        )
+                                    )
+                                }
+                            }
                             Text(
                                 text = choice.displayLabel(),
                                 style = MaterialTheme.typography.bodySmall
