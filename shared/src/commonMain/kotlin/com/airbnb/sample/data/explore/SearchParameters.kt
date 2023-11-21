@@ -12,10 +12,12 @@ data class SearchParameters(
 
 sealed interface DateWindowOffset {
     val label: String
-    data object None: DateWindowOffset {
+
+    data object None : DateWindowOffset {
         override val label: String = "Exact dates"
     }
-    data class Count(val count: Int): DateWindowOffset {
+
+    data class Count(val count: Int) : DateWindowOffset {
         override val label: String = when (count) {
             1 -> "± 1 day"
             else -> "± $count days"
@@ -28,9 +30,9 @@ data class FlexibleDateCriteria(
     val months: List<YearMonth>
 ) {
     sealed interface StayLength {
-        data object Weekend: StayLength
-        data object Week: StayLength
-        data object Month: StayLength
+        data object Weekend : StayLength
+        data object Week : StayLength
+        data object Month : StayLength
     }
 }
 
@@ -42,11 +44,59 @@ data class AccompanyingGuests(
 ) {
 
     fun hasSelections() = listOf(adults, children, infants, pets).any { it > 0 }
+
+    fun addAdult(): AccompanyingGuests {
+        return copy(adults = adults + 1)
+    }
+
+    fun removeAdult(): AccompanyingGuests {
+        val newValue = (adults - 1).coerceAtLeast(0)
+        return copy(
+            adults = newValue,
+            children = if (newValue == 0) 0 else children,
+            infants = if (newValue == 0) 0 else infants,
+            pets = if (newValue == 0) 0 else pets,
+        )
+    }
+
+    fun addChild(): AccompanyingGuests {
+        return copy(
+            adults = if (adults == 0) 1 else adults,
+            children = children + 1
+        )
+    }
+
+    fun removeChild(): AccompanyingGuests {
+        return copy(children = (children - 1).coerceAtLeast(0))
+    }
+
+    fun addInfant(): AccompanyingGuests {
+        return copy(
+            adults = if (adults == 0) 1 else adults,
+            infants = infants + 1
+        )
+    }
+
+    fun removeInfant(): AccompanyingGuests {
+        return copy(infants = (infants - 1).coerceAtLeast(0))
+    }
+
+    fun addPet(): AccompanyingGuests {
+        return copy(
+            adults = if (adults == 0) 1 else adults,
+            pets = pets + 1
+        )
+    }
+
+    fun removePet(): AccompanyingGuests {
+        return copy(pets = (pets - 1).coerceAtLeast(0))
+    }
+
     override fun toString(): String {
         val guestCount = adults + children
         if (guestCount == 0) return ""
 
-        val guestString =  if (guestCount > 1) {
+        val guestString = if (guestCount > 1) {
             "$guestCount guests"
         } else {
             "1 guest"
@@ -76,6 +126,7 @@ data class AccompanyingGuests(
 
         return guestString + infantString + petString
     }
+
     companion object {
         val Empty = AccompanyingGuests(0, 0, 0, 0)
     }

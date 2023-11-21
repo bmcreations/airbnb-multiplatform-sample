@@ -178,10 +178,16 @@ internal fun SearchQueryBuilder(
                         }
                     ) { show ->
                         if (show) {
+                            val isActive = state.currentSection == SearchQueryBuilderSection.Who
                             OccupantSelection(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = MaterialTheme.dimens.inset),
+                                    .padding(horizontal = MaterialTheme.dimens.inset)
+                                    .addIf(isActive) {
+                                        Modifier
+                                            .padding(bottom = MaterialTheme.dimens.staticGrid.x2)
+                                            .weight(1f)
+                                    },
                                 guests = state.guests,
                                 onGuestsChanged = {
                                     dispatch(
@@ -190,7 +196,7 @@ internal fun SearchQueryBuilder(
                                         )
                                     )
                                 },
-                                isActive = state.currentSection == SearchQueryBuilderSection.Who,
+                                isActive = isActive,
                                 onExpand = {
                                     dispatch(
                                         SearchQueryBuilderViewModel.Event.OnSectionClicked(

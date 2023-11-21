@@ -43,6 +43,9 @@ val ColorScheme.primaryTertiary: Color
 val ColorScheme.primaryVariant: Color
     @Composable get() = Color(0xFFE41E58)
 
+ val ColorScheme.outlineSecondaryVariant: Color
+     @Composable get() = Color(0xFFD9D9D9)
+
 val ColorScheme.fullOutline: Color
     @Composable get() = dayNightColor(
         light = MaterialTheme.colorScheme.onBackground,
