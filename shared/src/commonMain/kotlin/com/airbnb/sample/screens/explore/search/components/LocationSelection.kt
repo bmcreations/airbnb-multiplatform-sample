@@ -72,7 +72,11 @@ internal fun LocationSelection(
                     SearchBar(
                         title = {
                             Text(
-                                text = locationOption.displayLabel(),
+                                text = when (locationOption) {
+                                    is SearchLocationOption.PhysicalPlace,
+                                    is SearchLocationOption.Custom -> locationOption.displayLabel()
+                                    else  -> "Search destinations"
+                                },
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.secondaryText
                             )

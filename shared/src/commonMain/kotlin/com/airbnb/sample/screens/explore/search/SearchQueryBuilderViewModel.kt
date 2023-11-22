@@ -1,6 +1,9 @@
 package com.airbnb.sample.screens.explore.search
 
 import com.airbnb.sample.data.explore.AccompanyingGuests
+import com.airbnb.sample.data.explore.DateWindowOffset
+import com.airbnb.sample.data.explore.FlexibleDateCriteria
+import com.airbnb.sample.data.explore.SearchDateParameterType
 import com.airbnb.sample.data.explore.SearchDateParameters
 import com.airbnb.sample.data.explore.SearchLocationOption
 import com.airbnb.sample.data.explore.SearchQueryBuilderSection
@@ -8,8 +11,14 @@ import com.airbnb.sample.data.explore.SearchTypeSelection
 import com.airbnb.sample.domain.settings.ExploreRepository
 import com.airbnb.sample.utils.DispatcherProvider
 import com.airbnb.sample.viewmodel.BaseViewModel
+import com.rickclephas.kmm.viewmodel.coroutineScope
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
+import kotlin.time.Duration.Companion.days
 
 class SearchQueryBuilderViewModel @Inject constructor(
     dispatchers: DispatcherProvider,
@@ -27,6 +36,14 @@ class SearchQueryBuilderViewModel @Inject constructor(
         val dateParameters: SearchDateParameters?,
         val guests: AccompanyingGuests
     ) {
+
+        fun hasDateSelections() = when (val params = dateParameters) {
+            null -> false
+            is SearchDateParameters.Dates -> params.selectedDates.isNotEmpty() || params.offset != DateWindowOffset.None
+            is SearchDateParameters.Flexible -> params.criteria.length != FlexibleDateCriteria.StayLength.Weekend || params.criteria.months.isNotEmpty()
+            is SearchDateParameters.Months -> params.duration != 3
+        }
+
         companion object {
             val Empty = State(
                 query = "",
@@ -48,7 +65,33 @@ class SearchQueryBuilderViewModel @Inject constructor(
         data class OnDateParametersChanged(val parameters: SearchDateParameters?) : Event
         data class OnGuestsChanged(val guests: AccompanyingGuests) : Event
 
-        data object Reset : Event
+        data class Reset(
+            val location: Boolean = true,
+            val date: Boolean = true,
+            val occupants: Boolean = true,
+        ) : Event
+    }
+
+    init {
+        eventFlow
+            .filterIsInstance<Event.Reset>()
+            .onEach {
+                if (it.location) {
+                    dispatchEvent(Event.OnLocationOptionSelected(SearchLocationOption.Flexible))
+                }
+
+                if (it.date) {
+                    dispatchEvent(Event.OnDateParametersChanged(null))
+                }
+
+                if (it.occupants) {
+                    dispatchEvent(Event.OnGuestsChanged(AccompanyingGuests.Empty))
+                }
+
+                if (it.location && it.date && it.occupants) {
+                    dispatchEvent(Event.OnSectionClicked(SearchQueryBuilderSection.Where))
+                }
+            }.launchIn(viewModelScope.coroutineScope)
     }
 
     internal companion object {
@@ -85,8 +128,8 @@ class SearchQueryBuilderViewModel @Inject constructor(
                     state.copy(dateParameters = event.parameters)
                 }
 
-                is Event.Reset -> { _ ->
-                    State.Empty
+                is Event.Reset -> { state ->
+                    state
                 }
             }
         }

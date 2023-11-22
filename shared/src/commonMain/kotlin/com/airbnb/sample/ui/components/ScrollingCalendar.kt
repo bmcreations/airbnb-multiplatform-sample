@@ -96,13 +96,6 @@ fun VerticalScrollingCalendar(
                 )
             },
             dayContent = { day ->
-                val startOfMonth = YearMonth.of(day.date)
-                    .plusMonths(1)
-                    .atStartOfMonth()
-                val endOfMonth = YearMonth.of(day.date)
-                    .minusMonths(1)
-                    .atEndOfMonth()
-
                 // only render days in the given month (no in or out dates)
                 if (day.position == DayPosition.MonthDate) {
                     val isTodayOrFuture = day.date.toEpochDays() >= today.toEpochDays()
@@ -138,7 +131,7 @@ fun VerticalScrollingCalendar(
                     if (range != null && range.contains(day.date)) {
                         val month = YearMonth.of(day.date)
                         if (day.date.dayOfMonth == 1 || day.date.dayOfMonth == month.lengthOfMonth()) {
-                            Box(
+                            Text(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .align(Alignment.Center)
@@ -147,6 +140,9 @@ fun VerticalScrollingCalendar(
                                     }
                                     .drawCrossMonthGradient(day)
                                     .padding(MaterialTheme.dimens.staticGrid.x3),
+                                text = day.date.dayOfMonth.toString(), // not drawn in [drawCrossMonthGradient]
+                                style = MaterialTheme.typography.labelSmall,
+                                textAlign = TextAlign.Center,
                             )
                         }
                     }

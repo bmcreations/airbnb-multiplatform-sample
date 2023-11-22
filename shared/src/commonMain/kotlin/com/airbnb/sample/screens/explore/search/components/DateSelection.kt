@@ -37,18 +37,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import com.airbnb.sample.data.explore.DateWindowOffset
 import com.airbnb.sample.data.explore.SearchDateParameterType
 import com.airbnb.sample.data.explore.SearchDateParameters
+import com.airbnb.sample.screens.explore.search.dates.DateSelectionView
 import com.airbnb.sample.theme.dimens
+import com.airbnb.sample.theme.typography
 import com.airbnb.sample.ui.components.SegmentedControl
 import com.airbnb.sample.ui.components.VerticalScrollingCalendar
 import com.airbnb.sample.utils.toLocalDate
 import com.airbnb.sample.utils.ui.NoRippleInteractionSource
-import com.kizitonwose.calendar.core.CalendarDay
-import com.kizitonwose.calendar.core.DayOfWeekProgression
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
-import kotlinx.datetime.toLocalDateTime
 import org.lighthousegames.logging.logging
 
 @Composable
@@ -59,6 +58,7 @@ internal fun DateSelection(
     isActive: Boolean,
     onExpand: () -> Unit,
     onSkip: () -> Unit,
+    onReset: () -> Unit,
     onNext: () -> Unit,
 ) {
     val interactionSource by remember(isActive) {
@@ -72,7 +72,9 @@ internal fun DateSelection(
         modifier = modifier,
         isActive = isActive,
         interactionSource = interactionSource,
-        onClick = if (!isActive) { { onExpand() } } else null,
+        onClick = if (!isActive) {
+            { onExpand() }
+        } else null,
     ) {
         Crossfade(targetState = isActive) { active ->
             if (active) {
@@ -86,59 +88,9 @@ internal fun DateSelection(
                         style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.W700)
                     )
 
-                    var selectedDates by remember(parameters) {
-                        mutableStateOf(when (parameters) {
-                            is SearchDateParameters.Dates -> {
-                                val start = parameters.selectedRange.start.toLocalDate()
-                                val end = parameters.selectedRange.endInclusive.toLocalDate()
-                                listOf(start, end)
-                            }
-                            else -> emptyList()
-                        })
-                    }
-
-                    var windowOffset by remember(parameters) {
-                        mutableStateOf(
-                            when (parameters) {
-                                is SearchDateParameters.Dates -> parameters.offset
-                                else -> DateWindowOffset.None
-                            }
-                        )
-                    }
-
                     val dateSelectionTweaks = remember { SearchDateParameterType.entries }
-                    var selectedTweak by remember(parameters) {
+                    var selectedTweak by remember {
                         mutableStateOf(parameters?.type ?: SearchDateParameterType.Dates)
-                    }
-
-                    LaunchedEffect(selectedTweak, selectedDates, windowOffset) {
-                        logging("dates").d { "tweak=$selectedTweak, dates=$selectedDates, offset=$windowOffset" }
-                        when (selectedTweak) {
-                            SearchDateParameterType.Dates -> {
-                                if (selectedDates.isNotEmpty()) {
-                                    if (selectedDates.count() == 2) {
-                                        val dates =
-                                            selectedDates.map { it.atStartOfDayIn(TimeZone.currentSystemDefault()) }
-                                        val range = dates.first().rangeTo(dates.last())
-                                        val params = parameters as? SearchDateParameters.Dates
-                                        if (range != params?.selectedRange || windowOffset != params.offset) {
-                                            onParametersChanged(
-                                                SearchDateParameters.Dates(
-                                                    selectedRange = range,
-                                                    offset = windowOffset
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                            SearchDateParameterType.Months -> {
-                                // TODO:
-                            }
-                            SearchDateParameterType.Flexible -> {
-                                // TODO:
-                            }
-                        }
                     }
 
                     SegmentedControl(
@@ -151,80 +103,22 @@ internal fun DateSelection(
                         titleForItem = { it.name }
                     )
 
-                    VerticalScrollingCalendar(
-                        modifier = Modifier
-                            .weight(1f),
-                        contentPadding = PaddingValues(horizontal = MaterialTheme.dimens.inset),
-                        startDate = Clock.System.now(),
-                        monthsToShow = 100,
-                        selectedDates = selectedDates,
-                        showSelectedRanges = true,
-                        onDateSelected = { date ->
-                            if (selectedDates.contains(date)) {
-                                // remove
-                                selectedDates -= date
-                            } else {
-                                when (selectedDates.count()) {
-                                    0 -> selectedDates += date
-                                    1 -> {
-                                        // only one selected, see if we can make a range
-                                        val selectedDate = selectedDates.first()
-                                        if (date.toEpochDays() < selectedDate.toEpochDays()) {
-                                            // prior to selection, reset with this
-                                            selectedDates = listOf(date)
-                                        } else {
-                                            selectedDates += date
-                                        }
-                                    }
-                                    2 -> {
-                                        selectedDates = listOf(date)
-                                    }
-                                }
-                            }
-                        }
+                    DateSelectionView(
+                        modifier = Modifier.weight(1f),
+                        selectedType = selectedTweak,
+                        parameters = parameters,
+                        onParametersChanged = onParametersChanged
                     )
 
                     Divider(color = MaterialTheme.colorScheme.outline)
-                    SlidingWindowSelection(
-                        modifier = Modifier.fillMaxWidth(),
-                        selectedWindow = windowOffset
-                    ) {
-                        windowOffset = it
-                    }
-                    Divider(color = MaterialTheme.colorScheme.outline)
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(
-                                horizontal = MaterialTheme.dimens.inset,
-                                vertical = MaterialTheme.dimens.staticGrid.x3,
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            modifier = Modifier.clickable { onSkip() },
-                            text = "Skip",
-                            textDecoration = TextDecoration.Underline,
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.W500)
-                        )
 
-                        Button(
-                            onClick = { onNext() },
-                            shape = MaterialTheme.shapes.medium,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Black,
-                            ),
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(
-                                    horizontal = MaterialTheme.dimens.staticGrid.x4,
-                                    vertical = MaterialTheme.dimens.staticGrid.x2
-                                ),
-                                color = Color.White,
-                                text = "Next"
-                            )
-                        }
-                    }
+                    Footer(
+                        modifier = Modifier.fillMaxWidth(),
+                        hasChanges = parameters?.hasDateSelections() ?: false,
+                        onSkip = onSkip,
+                        onReset = onReset,
+                        onNext = onNext
+                    )
                 }
             } else {
                 CollapsedContent(
@@ -242,57 +136,44 @@ internal fun DateSelection(
     }
 }
 
-
 @Composable
-private fun SlidingWindowSelection(
+private fun Footer(
     modifier: Modifier = Modifier,
-    selectedWindow: DateWindowOffset,
-    onWindowSelected: (DateWindowOffset) -> Unit,
+    hasChanges: Boolean,
+    onSkip: () -> Unit,
+    onReset: () -> Unit,
+    onNext: () -> Unit
 ) {
-    val offsets = listOf(
-        DateWindowOffset.None,
-        DateWindowOffset.Count(1),
-        DateWindowOffset.Count(2),
-        DateWindowOffset.Count(3),
-        DateWindowOffset.Count(4),
-        DateWindowOffset.Count(5)
-    )
-
-    LazyRow(
-        modifier = modifier,
-        contentPadding = PaddingValues(
-            horizontal = MaterialTheme.dimens.inset,
-            vertical = MaterialTheme.dimens.staticGrid.x2
-        ),
-        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.staticGrid.x3),
+    Row(
+        modifier = Modifier
+            .padding(
+                horizontal = MaterialTheme.dimens.inset,
+                vertical = MaterialTheme.dimens.staticGrid.x3,
+            ).then(modifier),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        items(offsets) { offset ->
-            val isSelected = offset == selectedWindow
-            val borderThickness by animateDpAsState(
-                if (isSelected) MaterialTheme.dimens.thickBorder
-                else MaterialTheme.dimens.border
-            )
+        Text(
+            modifier = Modifier.clickable { if (hasChanges) onReset() else onSkip() },
+            text = if (hasChanges) "Reset" else "Skip",
+            textDecoration = TextDecoration.Underline,
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.W500)
+        )
 
-            val borderColor by animateColorAsState(
-                if (isSelected) MaterialTheme.colorScheme.onBackground
-                else MaterialTheme.colorScheme.outline
-            )
+        Button(
+            onClick = { onNext() },
+            shape = MaterialTheme.shapes.medium,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Black,
+            ),
+        ) {
             Text(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable { onWindowSelected(offset) }
-                    .border(
-                        width = borderThickness,
-                        color = borderColor,
-                        shape = CircleShape
-                    )
-                    .padding(
-                        horizontal = MaterialTheme.dimens.staticGrid.x4,
-                        vertical = MaterialTheme.dimens.staticGrid.x2
-                    ),
-                text = offset.label,
-                style = MaterialTheme.typography.labelSmall
+                modifier = Modifier.padding(
+                    horizontal = MaterialTheme.dimens.staticGrid.x4,
+                    vertical = MaterialTheme.dimens.staticGrid.x2
+                ),
+                color = Color.White,
+                text = "Next"
             )
         }
     }

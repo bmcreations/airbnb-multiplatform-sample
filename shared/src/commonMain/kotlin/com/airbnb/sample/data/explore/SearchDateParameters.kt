@@ -16,7 +16,13 @@ enum class SearchDateParameterType {
 sealed interface SearchDateParameters {
     val type: SearchDateParameterType
 
-    data class Dates(val selectedRange: ClosedRange<Instant>, val offset: DateWindowOffset): SearchDateParameters {
+    data class Dates(val selectedDates: List<Instant>, val offset: DateWindowOffset): SearchDateParameters {
+        val selectedRange: ClosedRange<Instant>?
+            get() {
+                if (selectedDates.isEmpty()) return null
+                return selectedDates.first().rangeTo(selectedDates.last())
+            }
+
         override val type: SearchDateParameterType = SearchDateParameterType.Dates
     }
     data class Months(val duration: Int): SearchDateParameters {
@@ -26,17 +32,25 @@ sealed interface SearchDateParameters {
         override val type: SearchDateParameterType = SearchDateParameterType.Flexible
     }
 
+    fun hasDateSelections() = when (this) {
+        is Dates -> selectedDates.isNotEmpty() || offset != DateWindowOffset.None
+        is Flexible -> criteria.length != FlexibleDateCriteria.StayLength.Weekend || criteria.months.isNotEmpty()
+        is Months -> duration != 3
+    }
+
     fun printed(): String {
         return when (this) {
             is Dates -> {
                return  when (offset) {
                     is DateWindowOffset.Count -> {
                         val moveBy = offset.count
-                        val adjustedStart = selectedRange.start.minus(moveBy.days)
-                        val adjustEnd = selectedRange.endInclusive.plus(moveBy.days)
-                        adjustedStart.rangeTo(adjustEnd).printed()
+                        val adjustedStart = selectedRange?.start?.minus(moveBy.days)
+                        selectedRange?.endInclusive?.plus(moveBy.days)?.let {
+                            adjustedStart?.rangeTo(it)?.printed().orEmpty()
+                        }.orEmpty()
+
                     }
-                    DateWindowOffset.None -> selectedRange.printed()
+                    DateWindowOffset.None -> selectedRange?.printed().orEmpty()
                 }
             }
             is Flexible -> {
@@ -51,19 +65,19 @@ sealed interface SearchDateParameters {
                 when (criteria.length) {
                     FlexibleDateCriteria.StayLength.Month -> {
                         if (months.count() > 1) {
-                            return "Month in ${months.joinToString(",") { it.take(3) }}"
+                            return "Month in ${months.joinToString(", ") { it.take(3) }}"
                         }
                         "Month in ${months.first()}"
                     }
                     FlexibleDateCriteria.StayLength.Week -> {
                         if (months.count() > 1) {
-                            return "Week in ${months.joinToString(",") { it.take(3) }}"
+                            return "Week in ${months.joinToString(", ") { it.take(3) }}"
                         }
                         "Week in ${months.first()}"
                     }
                     FlexibleDateCriteria.StayLength.Weekend -> {
                         if (months.count() > 1) {
-                            return "Weekend in ${months.joinToString(",") { it.take(3) }}"
+                            return "Weekend in ${months.joinToString(", ") { it.take(3) }}"
                         }
                         "Weekend in ${months.first()}"
                     }

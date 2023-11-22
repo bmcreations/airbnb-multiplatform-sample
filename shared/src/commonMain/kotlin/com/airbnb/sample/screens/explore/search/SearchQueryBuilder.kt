@@ -1,8 +1,6 @@
 package com.airbnb.sample.screens.explore.search
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -32,6 +30,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,8 +58,8 @@ internal fun SearchQueryBuilder(
     onClose: () -> Unit,
     animatedContainer: @Composable OrbitalScope.() -> Unit,
 ) {
-    var animateIn by remember { mutableStateOf(false) }
-    var animateInBottomBar by remember {
+    var animateIn by rememberSaveable { mutableStateOf(false) }
+    var animateInBottomBar by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -77,7 +76,7 @@ internal fun SearchQueryBuilder(
 
     val closeAndReset = {
         onClose()
-        dispatch(SearchQueryBuilderViewModel.Event.Reset)
+        dispatch(SearchQueryBuilderViewModel.Event.Reset())
     }
 
     Orbital(modifier = modifier) {
@@ -121,7 +120,8 @@ internal fun SearchQueryBuilder(
                 ) { show ->
                     if (show) {
                         BottomBar(
-                            onClear = { closeAndReset() }, onSearch = {})
+                            onClear = { dispatch(SearchQueryBuilderViewModel.Event.Reset()) },
+                            onSearch = {})
                     }
                 }
             }
@@ -155,7 +155,11 @@ internal fun SearchQueryBuilder(
                                     .padding(horizontal = MaterialTheme.dimens.inset),
                                 parameters = state.dateParameters,
                                 onParametersChanged = {
-                                    dispatch(SearchQueryBuilderViewModel.Event.OnDateParametersChanged(it))
+                                    dispatch(
+                                        SearchQueryBuilderViewModel.Event.OnDateParametersChanged(
+                                            it
+                                        )
+                                    )
                                 },
                                 isActive = state.currentSection == SearchQueryBuilderSection.When,
                                 onExpand = {
@@ -165,8 +169,29 @@ internal fun SearchQueryBuilder(
                                         )
                                     )
                                 },
-                                onSkip = {},
-                                onNext = {}
+                                onSkip = {
+                                    dispatch(
+                                        SearchQueryBuilderViewModel.Event.OnSectionClicked(
+                                            SearchQueryBuilderSection.Who
+                                        )
+                                    )
+                                },
+                                onReset = {
+                                    dispatch(
+                                        SearchQueryBuilderViewModel.Event.Reset(
+                                            location = false,
+                                            date = true,
+                                            occupants = false,
+                                        )
+                                    )
+                                },
+                                onNext = {
+                                    dispatch(
+                                        SearchQueryBuilderViewModel.Event.OnSectionClicked(
+                                            SearchQueryBuilderSection.Who
+                                        )
+                                    )
+                                }
                             )
                         }
                     }

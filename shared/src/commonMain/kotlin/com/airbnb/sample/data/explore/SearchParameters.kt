@@ -33,6 +33,10 @@ data class FlexibleDateCriteria(
         data object Weekend : StayLength
         data object Week : StayLength
         data object Month : StayLength
+
+        companion object {
+            fun options() = listOf(Weekend, Week, Month)
+        }
     }
 }
 
