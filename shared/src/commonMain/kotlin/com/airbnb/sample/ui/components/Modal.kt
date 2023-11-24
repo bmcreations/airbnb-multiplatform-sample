@@ -1,10 +1,10 @@
 package com.airbnb.sample.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -32,7 +32,7 @@ fun Modal(
     title: String,
     content: @Composable () -> Unit,
 ) {
-    Column(modifier = modifier.modalHeight().background(MaterialTheme.colorScheme.background)) {
+    Column(modifier = Modifier.fillMaxSize().modalHeight().then(modifier)) {
         Column(
             verticalArrangement = Arrangement.spacedBy(MaterialTheme.dimens.grid.x2)
         ) {

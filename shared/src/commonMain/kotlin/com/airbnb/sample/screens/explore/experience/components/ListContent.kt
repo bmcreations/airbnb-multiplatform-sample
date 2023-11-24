@@ -1,4 +1,4 @@
-package com.airbnb.sample.screens.explore.components
+package com.airbnb.sample.screens.explore.experience.components
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState

@@ -1,4 +1,4 @@
-package com.airbnb.sample.theme
+ package com.airbnb.sample.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ContentAlpha
@@ -25,8 +25,9 @@ internal val LightColorPalette = lightColorScheme(
     primary = Color(0xFFF22B54),
     onPrimary = Color.White,
     onPrimaryContainer = Color.White,
-    surfaceVariant = Color.White,
-    background = Color.White,
+    surface = Color.White,
+    surfaceVariant = Color(0xFFF9F9F9),
+    background = Color(0xFFF7F7F7),
     onBackground = Color(0xFF373737),
     secondary = Color(0xFF03DAC5),
     tertiary = Color(0xFF008488),
@@ -41,6 +42,9 @@ val ColorScheme.primaryTertiary: Color
     @Composable get() = Color(0xFFBF1C5A)
 val ColorScheme.primaryVariant: Color
     @Composable get() = Color(0xFFE41E58)
+
+ val ColorScheme.outlineSecondaryVariant: Color
+     @Composable get() = Color(0xFFD9D9D9)
 
 val ColorScheme.fullOutline: Color
     @Composable get() = dayNightColor(

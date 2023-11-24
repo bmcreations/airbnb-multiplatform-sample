@@ -1,11 +1,14 @@
-package com.airbnb.sample.screens.explore
+package com.airbnb.sample.screens.explore.experience
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,7 +22,6 @@ import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -36,39 +38,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.airbnb.sample.navigation.LocalPlatformNavigator
 import com.airbnb.sample.navigation.Screens
-import com.airbnb.sample.screens.explore.components.ListContent
-import com.airbnb.sample.screens.explore.components.MapContent
-import com.airbnb.sample.screens.explore.components.MapFab
-import com.airbnb.sample.screens.explore.components.TopBar
-import com.airbnb.sample.screens.explore.components.TotalToggle
+import com.airbnb.sample.screens.explore.experience.components.ListContent
+import com.airbnb.sample.screens.explore.experience.components.MapContent
+import com.airbnb.sample.screens.explore.experience.components.MapFab
+import com.airbnb.sample.screens.explore.experience.components.TopBar
+import com.airbnb.sample.screens.explore.experience.components.TotalToggle
 import com.airbnb.sample.screens.main.LocalBottomNavAnimator
 import com.airbnb.sample.theme.dimens
-import com.airbnb.sample.viewmodel.screenViewModel
+import com.airbnb.sample.utils.ui.navigationBars
+import com.skydoves.orbital.Orbital
+import com.skydoves.orbital.OrbitalScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-@Composable
-internal fun Screens.Main.Explore.RenderExplore() {
-    Content(modifier = Modifier.fillMaxSize())
-}
-
-@Composable
-private fun Screens.Main.Explore.Content(
-    modifier: Modifier = Modifier,
-    viewModel: ExploreViewModel = screenViewModel()
-) {
-    val state by viewModel.stateFlow.collectAsState()
-    ExploreScreen(modifier = modifier, state = state, dispatch = viewModel::dispatchEvent)
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ExploreScreen(
+internal fun ExploreScreen(
     modifier: Modifier = Modifier,
     state: ExploreViewModel.State,
     dispatch: (ExploreViewModel.Event) -> Unit,
+    offsetProvider: (Float) -> Unit,
+    animatedContainer: @Composable OrbitalScope.() -> Unit,
 ) {
     BoxWithConstraints {
         val maxHeight = this.maxHeight
@@ -81,7 +74,7 @@ private fun ExploreScreen(
         val peekHeight by remember(decorLabelHeight) {
             derivedStateOf {
                 56.dp +  // topbar height
-                    decorLabelHeight
+                        decorLabelHeight
             }
         }
 
@@ -101,7 +94,6 @@ private fun ExploreScreen(
             mutableFloatStateOf(1f)
         }
 
-        val offsetProvider = LocalBottomNavAnimator.current
         LaunchedEffect(bottomScaffoldState.bottomSheetState) {
             snapshotFlow { runCatching { bottomScaffoldState.bottomSheetState.requireOffset() } }
                 .map {
@@ -122,8 +114,20 @@ private fun ExploreScreen(
         }
 
         Scaffold(
-            modifier = modifier,
-            topBar = { TopBar(state, dispatch, onSizeDetermined = { topBarHeight = it }) },
+            modifier = modifier.windowInsetsPadding(WindowInsets.navigationBars),
+            topBar = {
+                Orbital {
+                    TopBar(
+                        state = state,
+                        dispatch = dispatch,
+                        searchContainer = {
+                            animatedContainer()
+                        },
+                        onFilterClicked = {},
+                        onSizeDetermined = { topBarHeight = it }
+                    )
+                }
+            },
             floatingActionButton = {
                 MapFab(
                     modifier = Modifier
@@ -155,7 +159,10 @@ private fun ExploreScreen(
                 sheetContentColor = MaterialTheme.colorScheme.onSurface,
                 sheetPeekHeight = peekHeight,
                 sheetContent = {
-                    val showTotalSelector by remember(state.selectedHouseType, state.houseTypes) {
+                    val showTotalSelector by remember(
+                        state.selectedHouseType,
+                        state.houseTypes
+                    ) {
                         derivedStateOf {
                             state.selectedHouseType == state.houseTypes.firstOrNull()
                         }
@@ -166,16 +173,18 @@ private fun ExploreScreen(
                     }
 
                     Text(
-                        modifier = Modifier.fillMaxWidth().onPlaced {
-                            with(density) { decorLabelHeight = it.size.height.toDp() }
+                        modifier = Modifier.fillMaxWidth().onPlaced { coordinates ->
+                            with(density) { decorLabelHeight = coordinates.size.height.toDp() }
                         },
                         textAlign = TextAlign.Center,
                         text = "${filteredResults.count()} ${typeDisplayed?.descriptor}",
                         style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.W600)
                     )
 
+                    val navBarPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+
                     ListContent(
-                        modifier = Modifier.height(maxHeight - topBarHeight),
+                        modifier = Modifier.height(maxHeight - topBarHeight - navBarPadding),
                         results = filteredResults,
                         showTotalSelector = showTotalSelector,
                         totalPriceSelected = state.useTotal,

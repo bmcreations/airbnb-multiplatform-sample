@@ -24,6 +24,7 @@ android {
         versionName = "${libs.versions.app.version.name.get()} (${SimpleDateFormat("MMddyyyy").format(Date())})"
     }
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -53,4 +54,5 @@ dependencies {
     implementation(project(":shared"))
     implementation(libs.kotlin.inject.runtime)
     ksp(libs.kotlin.inject.compiler)
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

@@ -1,16 +1,15 @@
 package com.airbnb.sample.domain.settings
 
+import com.airbnb.sample.data.explore.SearchParameters
 import com.airbnb.sample.data.houses.HouseType
 import com.airbnb.sample.data.houses.Stay
 import com.airbnb.sample.data.location.LatLong
 import com.airbnb.sample.networking.Unsplash
-import com.airbnb.sample.utils.to
-import com.benasher44.uuid.Uuid
 import com.benasher44.uuid.uuid4
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import me.tatarka.inject.annotations.Inject
-import org.lighthousegames.logging.logging
 import kotlin.random.Random
 import kotlin.random.nextInt
 import kotlin.time.Duration.Companion.days
@@ -22,6 +21,16 @@ class ExploreRepository {
     private val distanceRandom = Random(3)
     private val ratingRandom = Random(2)
     private val imageRandom = Random(8)
+
+    private val searchQuery = MutableStateFlow<SearchParameters?>(null)
+
+    fun searchFor(parameters: SearchParameters) {
+        searchQuery.value = parameters
+    }
+
+    fun clearSearch() {
+        searchQuery.value = null
+    }
 
     suspend fun getAvailableStays(
         minimal: Boolean = true,
@@ -44,11 +53,11 @@ class ExploreRepository {
                     nextAvailabilityDates = randomDateRange(Random),
                     imageUrls = (0..5).map {
                         when (type) {
-                            HouseType.AwesomeView -> Unsplash.randomImageUrl("house,front&${imageRandom.nextInt()}")
-                            HouseType.Cabin -> Unsplash.randomImageUrl("cabin,front&${imageRandom.nextInt()}")
-                            HouseType.Castle -> Unsplash.randomImageUrl("castle,front&${imageRandom.nextInt()}")
-                            HouseType.Houseboat -> Unsplash.randomImageUrl("boat,front&${imageRandom.nextInt()}")
-                            HouseType.Omg -> Unsplash.randomImageUrl("house,front&${imageRandom.nextInt()}")
+                            HouseType.AwesomeView -> Unsplash.randomImageUrl("house,front&${imageRandom.nextInt()}", searchQuery.value?.location)
+                            HouseType.Cabin -> Unsplash.randomImageUrl("cabin,front&${imageRandom.nextInt()}", searchQuery.value?.location)
+                            HouseType.Castle -> Unsplash.randomImageUrl("castle,front&${imageRandom.nextInt()}", searchQuery.value?.location)
+                            HouseType.Houseboat -> Unsplash.randomImageUrl("boat,front&${imageRandom.nextInt()}", searchQuery.value?.location)
+                            HouseType.Omg -> Unsplash.randomImageUrl("house,front&${imageRandom.nextInt()}", searchQuery.value?.location)
                         }
                     },
                     isFavorite = false,

@@ -1,4 +1,4 @@
-package com.airbnb.sample.screens.explore.components
+package com.airbnb.sample.screens.explore.experience.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -45,7 +45,6 @@ import com.airbnb.sample.theme.dimens
 import com.airbnb.sample.ui.components.Row
 import com.airbnb.sample.utils.formatAsMoney
 import com.airbnb.sample.utils.round
-import com.airbnb.sample.utils.ui.debugBounds
 import com.seiko.imageloader.rememberImagePainter
 import kotlin.math.roundToInt
 
